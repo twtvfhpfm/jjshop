@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dev.jnx.jjshop.dao.CategoryDao">
+    <insert id="add" useGeneratedKeys="true" keyColumn="id" keyProperty="id"
+    parameterType="dev.jnx.jjshop.model.Category">
+    insert into Category (name) values(#{name})
+  </insert>
+
+    <delete id="delete">
+    delete from Category where id=#{id}
+  </delete>
+
+    <select id="list" resultType="dev.jnx.jjshop.model.CategoryModel">
+        select a.*,(select count(*) from Goods where categoryId=a.id and isDeleted=0) as count,
+        ifnull((select thumb from Goods where categoryId=a.id and isDeleted=0 limit 1),'') thumb
+        from Category a;
+    </select>
+</mapper>

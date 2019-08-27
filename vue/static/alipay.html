@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <title>元宝母婴童品</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  </head>
+  <body>
+    <div id="hint" style="font-size: large;padding: 20px 0px;color: grey;"></div>
+  </body>
+  <script>
+        if (navigator.userAgent.indexOf("MicroMessenger") == -1){
+            getUrl();
+        }else{
+            var hintDiv = document.getElementById("hint");
+            hintDiv.innerHTML = "请点击右上角，选择在浏览器打开";
+        }
+        function getUrl(){
+            axios({
+                method: 'post',
+                url: "/api/chargecode/getalipay",
+                data: {amount: 0},
+                transformRequest: [function (data) {
+                let ret = ''
+                for (let it in data) {
+                    ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+                }
+                return ret
+                }],
+                headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+            .then(resp=>{
+                if (resp.data.status!=200){alert(resp.data.msg);}
+                else{
+                    window.location.href=resp.data.obj.url;
+                }
+            }).catch(err=>{
+                console.log(err);
+                alert("服务器异常");
+            })
+        }
+</script>
+</html>

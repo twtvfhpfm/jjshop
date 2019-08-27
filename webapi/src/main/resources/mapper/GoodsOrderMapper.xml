@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dev.jnx.jjshop.dao.GoodsOrderDao">
+
+    <select id="get" resultType="dev.jnx.jjshop.model.GoodsOrder">
+        select * from GoodsOrder where orderId=#{orderId}
+    </select>
+
+    <update id="update">
+        update GoodsOrder set status=#{status} where orderId=#{orderId}
+    </update>
+
+    <update id="confirmReceipt">
+        update GoodsOrder set status=4 where orderId=#{orderId} and uid=#{uid}
+    </update>
+
+    <insert id="add" parameterType="dev.jnx.jjshop.model.GoodsOrder" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into GoodsOrder (orderId,uid,cidList,status,addressId,totalPrice,totalSuperiorPrice) values(#{orderId},#{uid},#{cidList},
+        #{status},#{addressId},#{totalPrice},#{totalSuperiorPrice})
+    </insert>
+
+    <delete id="delete">
+        delete from GoodsOrder where orderId=#{orderId} and uid=#{uid}
+    </delete>
+
+    <select id="getByUID" resultType="dev.jnx.jjshop.model.GoodsOrder">
+        select * from GoodsOrder where uid=#{uid} and id &lt; #{lastMinId}
+        order by id desc limit 20
+    </select>
+
+    <select id="list" resultType="dev.jnx.jjshop.model.GoodsOrder">
+        select * from GoodsOrder where id &lt; #{lastMinId}
+        <if test="text != null and text!=''">
+            and orderId like CONCAT('%',#{text},'%')
+        </if>
+        order by id desc limit 20
+    </select>
+</mapper>

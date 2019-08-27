@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dev.jnx.jjshop.dao.CartDao">
+
+    <select id="get" resultType="dev.jnx.jjshop.model.Cart">
+        select * from Cart where id=#{id}
+    </select>
+
+    <update id="update" parameterType="dev.jnx.jjshop.model.Cart">
+        update Cart set uid=#{uid},goodsId=#{goodsId},price=#{price},superiorPrice=#{superiorPrice},skuListId=#{skuListId},num=#{num},ordered=#{ordered},
+        where id=#{id}
+    </update>
+
+    <update id="changeNum">
+        update Cart set num=num+#{delta} where id=#{id} and uid=#{uid}
+    </update>
+
+    <update id="setOrdered">
+        update Cart set ordered=1 where id=#{id}
+    </update>
+
+    <insert id="add" parameterType="dev.jnx.jjshop.model.Cart" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into Cart (uid,goodsId,price,superiorPrice,skuListId,num,ordered) values(#{uid},#{goodsId},#{price},#{superiorPrice},#{skuListId},
+        #{num},#{ordered})
+    </insert>
+
+    <delete id="delete">
+        delete from Cart where id=#{id} and uid=#{uid}
+    </delete>
+
+    <select id="getByUid" resultType="dev.jnx.jjshop.model.CartModel">
+        select * from Cart where uid=#{uid} and ordered=0
+    </select>
+</mapper>

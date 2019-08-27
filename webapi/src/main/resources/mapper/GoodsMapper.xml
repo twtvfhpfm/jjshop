@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dev.jnx.jjshop.dao.GoodsDao">
+    <insert id="add" useGeneratedKeys="true" keyColumn="id" keyProperty="id"
+            parameterType="dev.jnx.jjshop.model.Goods">
+    insert into Goods (categoryId, price, superiorPrice, remain, title, description,
+    thumb, sales) values(#{categoryId}, #{price}, #{superiorPrice}, #{remain}, #{title},
+    #{description}, #{thumb}, #{sales})
+  </insert>
+
+    <update id="delete">
+    update Goods set isDeleted=1 where id=#{id};
+    update Sku set isDeleted=1 where goodsId=#{id};
+    update SkuList set isDeleted=1 where goodsId=#{id};
+  </update>
+
+    <update id="update">
+        update Goods set categoryId=#{categoryId}, price=#{price}, superiorPrice=#{superiorPrice},
+        remain=#{remain},title=#{title},description=#{description},thumb=#{thumb},sales=#{sales}
+        where id=#{id}
+    </update>
+
+    <update id="incrSales">
+        update Goods set sales=sales+#{num}, remain=remain-#{num} where id=#{id} and remain>=#{num}
+    </update>
+
+    <select id="get" resultType="dev.jnx.jjshop.model.GoodsModel">
+        select a.*,b.name as categoryName from Goods a left join Category b on a.categoryId=b.id where a.id=#{id}
+    </select>
+
+    <select id="getByCategory" resultType="dev.jnx.jjshop.model.Goods">
+        select * from Goods where id &lt; #{lastMinId} and categoryId=#{categoryId} and isDeleted=0
+        order by id desc limit 20
+    </select>
+
+    <select id="getByLike" resultType="dev.jnx.jjshop.model.Goods">
+        select * from Goods where id &lt; #{lastMinId} and isDeleted=0
+        and (title like CONCAT('%',#{text},'%') or description like CONCAT('%',#{text},'%'))
+        order by id desc limit 20
+    </select>
+
+    <select id="getCountInCategory" resultType="java.lang.Integer">
+        select ifnull(count(*),0) from Goods where categoryId=#{categoryId} and isDeleted=0
+    </select>
+</mapper>

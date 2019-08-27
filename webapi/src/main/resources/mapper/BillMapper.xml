@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dev.jnx.jjshop.dao.BillDao">
+
+    <select id="getDailyBill" resultType="dev.jnx.jjshop.model.BillModel">
+        select date_format(createTime,'%Y-%m-%d') as date,
+        sum(totalPrice-totalSuperiorPrice) as inCome
+        from GoodsOrder where date_format(createTime,'%Y-%m-%d') &lt; #{lastMinDate}
+        group by date order by date desc limit 20
+    </select>
+
+    <select id="getWeeklyBill" resultType="dev.jnx.jjshop.model.BillModel">
+        select yearweek(date_format(createTime,'%Y-%m-%d'),1) as week,
+        sum(totalPrice-totalSuperiorPrice) as inCome
+        from GoodsOrder where yearweek(date_format(createTime,'%Y-%m-%d'),1) &lt; #{lastMinWeek}
+        group by week order by week desc limit 20
+    </select>
+
+    <select id="getMonthlyBill" resultType="dev.jnx.jjshop.model.BillModel">
+        select date_format(createTime,'%Y-%m') as month,
+        sum(totalPrice-totalSuperiorPrice) as inCome
+        from GoodsOrder where date_format(createTime,'%Y-%m') &lt; #{lastMinMonth}
+        group by month order by month desc limit 20
+    </select>
+</mapper>

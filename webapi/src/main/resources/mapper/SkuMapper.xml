@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dev.jnx.jjshop.dao.SkuDao">
+
+    <select id="get" resultType="dev.jnx.jjshop.model.Sku">
+        select * from Sku where id=#{id}
+    </select>
+
+    <update id="update" parameterType="dev.jnx.jjshop.model.Sku">
+        update Sku set goodsId=#{goodsId},imgId=#{imgId},keyName=#{keyName},valueName=#{valueName},
+        skuOrder=#{skuOrder} where id=#{id}
+    </update>
+
+    <insert id="add" parameterType="dev.jnx.jjshop.model.Sku" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into Sku (goodsId,imgId,keyName,valueName,skuOrder) values(#{goodsId},#{imgId},#{keyName},
+        #{valueName},#{skuOrder})
+    </insert>
+
+    <update id="delete">
+        update Sku set isDeleted=1 where id=#{id};
+        update SkuList set isDeleted=1 where s1Id=#{id} or s2Id=#{id} or s3Id=#{id};
+    </update>
+
+    <select id="getByGoodsId" resultType="dev.jnx.jjshop.model.Sku">
+        select * from Sku where goodsId=#{goodsId} order by skuOrder
+    </select>
+</mapper>

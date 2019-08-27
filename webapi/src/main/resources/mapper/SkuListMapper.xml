@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dev.jnx.jjshop.dao.SkuListDao">
+
+    <select id="get" resultType="dev.jnx.jjshop.model.SkuList">
+        select * from SkuList where id=#{id}
+    </select>
+
+    <update id="update" parameterType="dev.jnx.jjshop.model.SkuList">
+        update SkuList set goodsId=#{goodsId},price=#{price},superiorPrice=#{superiorPrice},s1Id=#{s1Id},s2Id=#{s2Id},
+        s3Id=#{s3Id},stockNum=#{stockNum} where id=#{id}
+    </update>
+
+    <insert id="add" parameterType="dev.jnx.jjshop.model.SkuList" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into SkuList (goodsId,price,superiorPrice,s1Id,s2Id,s3Id,stockNum) values(#{goodsId},#{price},#{superiorPrice},#{s1Id},
+        #{s2Id},#{s3Id},#{stockNum})
+    </insert>
+
+    <update id="delete">
+        update SkuList set isDeleted=1 where id=#{id}
+    </update>
+
+    <select id="getByGoodsId" resultType="dev.jnx.jjshop.model.SkuList">
+        select * from SkuList where goodsId=#{goodsId}
+    </select>
+</mapper>
