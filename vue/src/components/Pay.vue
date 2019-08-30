@@ -3,35 +3,25 @@
     <van-sticky>
     <van-nav-bar title="收银台" left-text="" left-arrow @click-left="onClickLeft" style="background-color: rgb(240, 240,240);"/>
     </van-sticky>
+    
+    <van-popup v-model="showLoading" :overlay="false" :close-on-click-overlay="false">
+        <van-button loading type="primary" loading-type="spinner" loading-text="正在生成二维码" style="background-color: grey; border-color: grey;"></van-button>
+    </van-popup>
     <h1 class="redText">￥{{formatPrice(totalPrice)}}</h1>
-    <div style="padding: 10px 10px;text-align: left;">请复制订单号：{{orderId}}</div>
-    <div style="margin: 10px 10px;">
-    <van-button
-      type="info"
-      size="large"
-      :text="btnText"
-      v-clipboard:copy="orderId"
-      v-clipboard:success="onCopy"
-      v-clipboard:error="onError"
-    ></van-button>
+    <div v-if="showWechat">
+      <van-divider :style="{ color: '#1989fa', borderColor: '#1989fa', padding: '0 16px' }">
+        微信支付
+      </van-divider>
+      <div>长按以下二维码进行付款</div>
+      <van-image  v-if="showWechat" width="60%" :src="chargeCodeUrl" />
     </div>
-    <div v-if="showstep2" style="padding: 10px 10px;text-align: left;">选择付款方式：</div>
-    <van-radio-group v-model="radio" v-if="showstep2">
-      <van-cell-group>
-        <van-cell title="微信" clickable @click="onChooseWechat">
-          <van-radio slot="right-icon" name="1" />
-        </van-cell>
-        <van-cell title="支付宝" clickable @click="onChooseAlipay">
-          <van-radio slot="right-icon" name="2" />
-        </van-cell>
-      </van-cell-group>
-    </van-radio-group>
-    <div v-if="showWechat">长按以下二维码进行付款</div>
-    <div v-if="showWechat" class="redText">付款时请备注订单号</div>
-    <van-image  v-if="showWechat" width="60%" :src="chargeCodeUrl" />
-    <div v-if="showAlipay" class="redText">付款时请备注订单号</div>
-    <div style="margin: 10px 10px;">
-    <van-button type="default" size="large" v-if="showAlipay" @click="alipay">点击去支付宝付款</van-button>
+    <div v-if="showAlipay">
+      <van-divider :style="{ color: '#1989fa', borderColor: '#1989fa', padding: '0 16px' }">
+        支付宝支付
+      </van-divider>
+      <div style="margin: 10px 10px;">
+      <van-button type="default" size="large" v-if="showAlipay" @click="alipay">点击去支付宝付款</van-button>
+      </div>
     </div>
     <div style="padding: 30px 0px;"/>
   </div>
@@ -40,15 +30,21 @@
 export default {
   data() {
     return {
+      showLoading: false,
         radio: '0',
         showWechat: false,
         showAlipay: false,
         btnText: "点击复制订单号",
         showstep2: false,
-      chargeCodeUrl: "/api/chargecode/getwechat?amount=0",
+        timer: 0,
+        count: 0,
+      chargeCodeUrl: "",
     };
   },
-  mounted() {},
+  mounted() {
+    this.showLoading = true;
+    this.timer = setInterval(this.checkWeChatQRCode, 2000);
+  },
   computed: {
     orderId: function() {
       return this.$store.state.pay.orderId;
@@ -62,28 +58,41 @@ export default {
       //window.open('/shop/static/alipay.html');
       window.location.href="/shop/static/alipay.html";
     },
-    onChooseWechat(){
-      this.radio="1";
-      this.showWechat=true;
-      this.showAlipay=false;
-    },
-    onChooseAlipay(){
-      this.radio="2";
-      this.showWechat=false;
-      this.showAlipay=true;
+    checkWeChatQRCode(){
+      this.postRequest("/chargecode/checkwechatqrcode",{orderId: this.orderId}).then(resp=>{
+        if (resp.data.status == 200){
+          this.showLoading=false;
+          clearInterval(this.timer);
+          this.count = 0;
+          this.chargeCodeUrl="/api/chargecode/getwechatqrcode?orderId="+this.orderId;
+          this.showWechat=true;
+          this.showAlipay=true;
+        }else{
+          if (this.count++ == 4){
+          this.showLoading=false;
+          clearInterval(this.timer);
+          this.count = 0;
+          this.chargeCodeUrl="/api/chargecode/getwechat?amount=0";
+          this.showWechat=true;
+          this.showAlipay=true;
+          }
+        }
+      }).catch(err=>{
+          this.showLoading=false;
+          clearInterval(this.timer);
+          this.count = 0;
+          this.chargeCodeUrl="/api/chargecode/getwechat?amount=0";
+          this.showWechat=true;
+          this.showAlipay=true;
+        console.log(err);
+        this.$toast("服务器异常");
+      })
     },
     onClickLeft() {
       this.$router.back(-1);
     },
     formatPrice(price) {
       return (price / 100).toFixed(2);
-    },
-    onCopy(e) {
-      this.btnText="已复制到剪贴板";
-      this.showstep2=true;
-    },
-    onError(e) {
-      this.$toast("复制失败");
     }
   }
 };

@@ -8,6 +8,7 @@
         select date_format(createTime,'%Y-%m-%d') as date,
         sum(totalPrice-totalSuperiorPrice) as inCome
         from GoodsOrder where date_format(createTime,'%Y-%m-%d') &lt; #{lastMinDate}
+        and status in (1,2,3,4)
         group by date order by date desc limit 20
     </select>
 
@@ -15,6 +16,7 @@
         select yearweek(date_format(createTime,'%Y-%m-%d'),1) as week,
         sum(totalPrice-totalSuperiorPrice) as inCome
         from GoodsOrder where yearweek(date_format(createTime,'%Y-%m-%d'),1) &lt; #{lastMinWeek}
+        and status in (1,2,3,4)
         group by week order by week desc limit 20
     </select>
 
@@ -22,6 +24,7 @@
         select date_format(createTime,'%Y-%m') as month,
         sum(totalPrice-totalSuperiorPrice) as inCome
         from GoodsOrder where date_format(createTime,'%Y-%m') &lt; #{lastMinMonth}
+        and status in (1,2,3,4)
         group by month order by month desc limit 20
     </select>
 </mapper>

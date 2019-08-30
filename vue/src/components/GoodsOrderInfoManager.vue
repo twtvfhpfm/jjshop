@@ -34,6 +34,17 @@
         <van-tag v-for="tag in item.tagNames" :key="tag" plain type="danger">{{tag}}</van-tag>
       </div>
     </van-card>
+
+    
+    <van-divider :style="{ color: '#1989fa', borderColor: '#1989fa', padding: '0 16px' }">
+      物流信息
+    </van-divider>
+    <van-steps direction="vertical" :active="0">
+      <van-step v-for="i2 in logisticList" :key="i2.AcceptTime">
+          <div style="text-align: left;font-weight:bold;">{{i2.AcceptStation}}</div>
+          <div style="text-align: left;">{{i2.AcceptTime}}</div>
+      </van-step>
+    </van-steps>
     <div style="padding: 80px 0px;"></div>
     
         <van-button
@@ -93,6 +104,7 @@
 export default {
   data() {
     return {
+      logisticList: [],
         shipperRadio: "",
         logisticCode: "",
         shipperCode: "",
@@ -137,6 +149,29 @@ export default {
     this.getGoodsOrder();
   },
   methods: {
+      queryLogistic(){
+          this.showLoading=true;
+          this.postRequest("/logistics/getlogistic", {orderId: this.goodsOrder.orderId})
+          .then(resp=>{
+              this.showLoading=false;
+              if(resp.data.status!=200){this.$toast(resp.data.msg);}
+              else{
+                  var response = JSON.parse(resp.data.obj.response);
+                  if(!response.Success){
+                      this.$toast("物流查询失败");
+                      return;
+                  }
+                  this.logisticList = response.Traces.reverse();
+                  if(this.logisticList.length==0){
+                      this.$toast(response.Reason);
+                  }
+              }
+          }).catch(err=>{
+              this.showLoading=false;
+              console.log(err);
+              this.$toast("服务器异常");
+          })
+      },
       saveLogistic(){
           if(this.shipperRadio.trim()==""){
               this.$toast("请选择快递公司");
@@ -159,6 +194,7 @@ export default {
               else{
                   this.$toast("保存成功");
                   this.logisticShow = false;
+                  this.queryLogistic();
               }
           }).catch(err=>{
               this.showLoading=false;
@@ -285,6 +321,7 @@ export default {
               this.goodsOrder.address.city +
               this.goodsOrder.address.county +
               this.goodsOrder.address.addressDetail;
+              this.queryLogistic();
           }
         })
         .catch(err => {

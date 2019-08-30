@@ -4,6 +4,7 @@ import dev.jnx.jjshop.bean.RespBean;
 import dev.jnx.jjshop.dao.*;
 import dev.jnx.jjshop.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -20,6 +21,7 @@ public class GoodsOrderService {
     @Autowired private GoodsDao goodsDao;
     @Autowired private SkuListDao skuListDao;
     @Autowired private SkuDao skuDao;
+    @Autowired private RedisTemplate redisTemplate;
 
     public GoodsOrderModel getModel(GoodsOrder goodsOrder){
         GoodsOrderModel model = new GoodsOrderModel();
@@ -81,6 +83,7 @@ public class GoodsOrderService {
             cartList.forEach(o->{
                 cartDao.setOrdered(o.getId());
             });
+            redisTemplate.opsForList().leftPush("listWaitForQRCode", goodsOrder);
             return RespBean.ok("添加成功", goodsOrder.getOrderId());
         }
         else{

@@ -94,7 +94,22 @@ public class AuthFilter implements Filter {
                 break;
             }
         }
-        filterChain.doFilter(new MyRequestWrapper(req, user), resp);
+        ResponseWrapper respWrapper = new ResponseWrapper(resp);
+        filterChain.doFilter(new MyRequestWrapper(req, user), respWrapper);
+        filterResponse(respWrapper, user);
+    }
+
+    private void filterResponse(ResponseWrapper wrapper, UserModel user) throws IOException{
+        byte[] data = wrapper.getResponseData();
+        //对非管理员屏蔽superiorPrice
+        String ct = wrapper.getContentType();
+        if ((user == null || user.getRole() == 0) && ct.startsWith("application/json")){
+            String result = new String(data, "utf-8");
+            result = Pattern.compile("uperiorPrice\":[0-9\\.]+").matcher(result)
+                    .replaceAll("uperiorPrice\":0");
+            data = result.getBytes("utf-8");
+        }
+        wrapper.doWrite(data);
     }
 
     private void response(HttpServletResponse resp, RespBean bean){

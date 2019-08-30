@@ -56,12 +56,12 @@ public class LogisticsService {
                 || model.getShipperCode().isEmpty()){
             return RespBean.error("未查到物流信息");
         }
-        String response = (String)redisTemplate.opsForValue().get("logistics_" + orderId);
+        String response = (String)redisTemplate.opsForValue().get("logistics_" + model.getLogisticCode());
         if (response == null || response.isEmpty()){
             try {
                 response = kdNiaoUtil.queryLogistic(model.getCustomerName(), model.getShipperCode(),
                         model.getLogisticCode());
-                redisTemplate.opsForValue().set("logistics_" + orderId, response, 5, TimeUnit.HOURS);
+                redisTemplate.opsForValue().set("logistics_" + model.getLogisticCode(), response, 5, TimeUnit.HOURS);
             }
             catch(UnsupportedEncodingException ex){
                 return RespBean.error("编码失败");
