@@ -12,6 +12,10 @@ export default new Vuex.Store({
       role: window.localStorage.getItem('user' || '[]') == null ? '' : JSON.parse(window.localStorage.getItem('user' || '[]')).role,
       id: window.localStorage.getItem('user' || '[]') == null ? -1 : JSON.parse(window.localStorage.getItem('user' || '[]')).id
     },
+    loginHistory: {
+      username: window.localStorage.getItem('loginHistory') == null ? "" : JSON.parse(window.localStorage.getItem('loginHistory')).username,
+      password: window.localStorage.getItem('loginHistory') == null ? "" : JSON.parse(window.localStorage.getItem('loginHistory')).password,
+    },
     routes: [],
     msgList: [],
     isDotMap: new Map(),
@@ -38,6 +42,14 @@ export default new Vuex.Store({
   mutations: {
     initMenu(state, menus){
       state.routes = menus;
+    },
+    setLoginHistory(state, item){
+      state.loginHistory = item;
+      window.localStorage.setItem('loginHistory', JSON.stringify(item));
+    },
+    removeLoginHistory(state){
+      state.loginHistory = {username: "", password: ""};
+      window.localStorage.removeItem('loginHistory');
     },
     setManagerCategoryId(state, id){
       state.manager.categoryId = id;

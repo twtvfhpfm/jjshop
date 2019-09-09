@@ -19,7 +19,7 @@ public class AddressController {
 
     @RequestMapping("/add")
     RespBean add(String addressDetail, String areaCode, String province, String city, String county,
-                 boolean isDefault, @RequestParam("tel") String mobile, String name, Integer uid,
+                 boolean isDefault, @RequestParam("tel") String mobile, String name, Integer currentUid,
                  Integer id, String mode){
         Address addr = new Address();
         addr.setAddressDetail(addressDetail);
@@ -30,37 +30,37 @@ public class AddressController {
         addr.setDefault(isDefault);
         addr.setMobile(mobile);
         addr.setName(name);
-        addr.setUid(uid);
+        addr.setUid(currentUid);
         if (id != null) addr.setId(id);
         if (mode.equals("add")){
             addressService.add(addr);
             if (isDefault){
-                addressService.setDefault(addr.getId(), uid);
+                addressService.setDefault(addr.getId(), currentUid);
             }
             return RespBean.ok("添加成功");
         }else{
             int ret = addressService.update(addr);
             if (isDefault){
-                addressService.setDefault(addr.getId(), uid);
+                addressService.setDefault(addr.getId(), currentUid);
             }
             return ret == 0 ? RespBean.error("修改失败") : RespBean.ok("修改成功");
         }
     }
 
     @RequestMapping("/list")
-    RespBean list(int uid){
-        List<Address> addrList = addressService.list(uid);
+    RespBean list(int currentUid){
+        List<Address> addrList = addressService.list(currentUid);
         return RespBean.ok("获取成功", addrList);
     }
 
     @RequestMapping("/delete")
-    RespBean delete(int id, int uid){
+    RespBean delete(int id, int currentUid){
         Address addr = addressService.get(id);
         if (addr == null){
             return RespBean.error("id不存在");
         }
 
-        int ret = addressService.delete(id, uid);
+        int ret = addressService.delete(id, currentUid);
         if (ret != 1){
             return RespBean.error("删除失败");
         }

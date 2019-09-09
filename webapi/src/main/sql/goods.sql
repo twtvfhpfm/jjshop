@@ -3,6 +3,7 @@ create table Goods(
 	categoryId int not null,
 	price decimal(12, 2) not null,
 	superiorPrice decimal(12, 2) not null,
+	transportFee decimal(12, 2) not null,
 	remain int not null,
 	sales int not null default 0,
 	title varchar(200) default '' not null,

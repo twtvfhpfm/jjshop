@@ -19,18 +19,18 @@ public class GoodsOrderController {
     private GoodsOrderService goodsOrderService;
 
     @RequestMapping("/add")
-    public RespBean add(int uid, String cidList, int addressId){
+    public RespBean add(int currentUid, String cidList, int addressId, Integer couponId){
         DateFormat df = new SimpleDateFormat("SSSyyMMddHHmmss");
         String orderId = df.format(new Date());
         orderId = String.format("A%03d", (int)(Math.random()*999)) + orderId;
-        GoodsOrder goodsOrder = GoodsOrder.of(0, orderId, uid, cidList, 0, addressId,
+        GoodsOrder goodsOrder = GoodsOrder.of(0, orderId, currentUid, cidList, 0, addressId,
                 BigDecimal.ZERO, BigDecimal.ZERO);
-        return goodsOrderService.add(goodsOrder);
+        return goodsOrderService.add(goodsOrder, couponId);
     }
 
     @RequestMapping("/delete")
-    public RespBean delete(String orderId, int uid){
-        return goodsOrderService.delete(orderId, uid);
+    public RespBean delete(String orderId, int currentUid){
+        return goodsOrderService.delete(orderId, currentUid);
     }
 
     @RequestMapping("/updatestatus")
@@ -39,8 +39,8 @@ public class GoodsOrderController {
     }
 
     @RequestMapping("/confirmreceipt")
-    public RespBean confirmReceipt(String orderId, int uid){
-        return goodsOrderService.confirmReceipt(orderId, uid);
+    public RespBean confirmReceipt(String orderId, int currentUid){
+        return goodsOrderService.confirmReceipt(orderId, currentUid);
     }
 
     @RequestMapping("/get")
@@ -49,9 +49,9 @@ public class GoodsOrderController {
     }
 
     @RequestMapping("/getbyuid")
-    public RespBean getByUID(int uid, int lastMinId, String text){
+    public RespBean getByUID(int currentUid, int lastMinId, String text){
         if (lastMinId == 0) lastMinId = Integer.MAX_VALUE;
-        return goodsOrderService.getByUID(uid, lastMinId, text);
+        return goodsOrderService.getByUID(currentUid, lastMinId, text);
     }
 
     @RequestMapping("/list")

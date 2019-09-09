@@ -12,9 +12,6 @@
         style="background-color: rgb(240, 240,240);"
       />
     </van-sticky>
-    <van-popup v-model="showLoading" :overlay="false" :close-on-click-overlay="false">
-        <van-button loading type="primary" loading-type="spinner" style="background-color: grey; border-color: grey;"/>
-    </van-popup>
 
     <van-dialog
       v-model="showDialog"
@@ -65,7 +62,6 @@
     <div style="margin: 10px 10px;">
     <van-button
       type="info"
-      :disabled="s1Result.length==0 && s2Result.length==0 && s3Result.length==0"
       @click="onBatchSetClick"
       size="large"
     >批量编辑库存/价格</van-button>
@@ -89,7 +85,6 @@ export default {
             dialogSuperiorPrice: "",
             dialogStockNum: "",
             showDialog: false,
-            showLoading: false,
             s1Result:[],
             s2Result:[],
             s3Result:[],
@@ -105,16 +100,11 @@ export default {
     },
     methods:{
         onDialogConfirm(){
-            console.log(this.s1Result);
-            console.log(this.s2Result);
-            console.log(this.s3Result);
             for (var item of this.list){
                 console.log(item);
                 if ((this.s1Result.length == 0 || item.s1Id == this.s1Result[0])
                     && (this.s2Result.length == 0 || item.s2Id == this.s2Result[0])
                     && (this.s3Result.length == 0 || item.s3Id == this.s3Result[0])){
-                        console.log(this.dialogPrice.trim()+" | "+this.dialogSuperiorPrice.trim()+" | "+this.dialogStockNum.trim());
-                        console.log(item);
                         if (this.dialogPrice.trim()!="") item.price=this.dialogPrice.trim();
                         if (this.dialogSuperiorPrice.trim()!="") item.superiorPrice=this.dialogSuperiorPrice.trim();
                         if (this.dialogStockNum.trim()!="") item.stockNum=this.dialogStockNum.trim();
@@ -122,7 +112,6 @@ export default {
             }
         },
         onBatchSetClick(){
-            if (this.s1Result.length==0 && this.s2Result.length==0 && this.s3Result.length==0) return;
             this.dialogPrice="";
             this.dialogSuperiorPrice="";
             this.dialogStockNum="";
@@ -134,16 +123,16 @@ export default {
             for(var item of this.list){
                 item.goodsId=goodsId;
             }
-            this.showLoading=true;
+            this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
             this.jsonPostRequest("/skulist/addorupdate", this.list).then(resp=>{
-                this.showLoading=false;
+                this.$toast.clear();
                 if(resp.data.status!=200) {this.$toast(resp.data.msg);}
                 else{
                     this.getGoods();
                     this.$toast("保存成功");
                 }
             }).catch(err=>{
-                this.showLoading=false;
+                this.$toast.clear();
                 console.log(err);
                 this.$toast("服务器异常");
             })
@@ -151,11 +140,11 @@ export default {
         getGoods(){
             var goodsId = this.$store.state.manager.goodsId;
             if (goodsId==0) return;
-            this.showLoading=true;
+            this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
             this.postRequest("/goods/get",{
                 id: goodsId
             }).then(resp=>{
-                this.showLoading=false;
+                this.$toast.clear();
                 if(resp.data.status!=200) {this.$toast(resp.data.msg);}
                 else{
                     this.goods = resp.data.obj;
@@ -201,7 +190,7 @@ export default {
 
                 }
             }).catch(err=>{
-                this.showLoading=false;
+                this.$toast.clear();
                 console.log(err);
                 this.$toast("服务器异常");
             })

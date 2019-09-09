@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dev.jnx.jjshop.dao.CouponDao">
+    <insert id="offer" parameterType="java.util.Map">
+        insert into Coupon (uid, goodsId, orderId, priceCond, numCond, type, amount, isDeleted,
+        isUsed, beginTime, endTime)
+        <choose>
+            <when test="uid==0">
+                select id,#{goodsId},'',#{priceCond},#{numCond},
+                #{type},#{amount},0,0,#{beginTime},#{endTime}
+                from User
+            </when>
+            <otherwise>
+                values(#{uid},#{goodsId},'',#{priceCond},#{numCond},
+                #{type},#{amount},0,0,#{beginTime},#{endTime})
+            </otherwise>
+        </choose>
+  </insert>
+
+    <update id="use">
+        update Coupon set orderId=#{orderId}, isUsed=1 where id=#{id} and isUsed=0 and uid=#{uid}
+        and current_timestamp() &gt; beginTime and current_timestamp() &lt; endTime
+  </update>
+    <update id="unUse">
+        update Coupon set orderId='', isUsed=0 where orderId=#{orderId} and isUsed=1 and uid=#{uid}
+  </update>
+
+    <select id="get" resultType="java.util.Map">
+        select * from Coupon where uid=#{uid} and current_timestamp() &lt; endTime and isDeleted=0 and isUsed=0
+        <if test="orderId != null and orderId!=''">
+            and orderId=#{orderId}
+        </if>
+        <if test="id!=0">
+            and id=#{id}
+        </if>
+        <if test="goodsId!=0">
+            and goodsId=#{goodsId}
+        </if>
+        order by endTime asc
+    </select>
+
+    <select id="getBean" resultType="dev.jnx.jjshop.model.Coupon">
+        select * from Coupon where uid=#{uid} and id=#{id} and current_timestamp() &lt; endTime
+    </select>
+</mapper>

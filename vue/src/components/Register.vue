@@ -3,9 +3,6 @@
     <van-sticky>
     <van-nav-bar title="注册" left-text="" left-arrow @click-left="onClickLeft" style="background-color: rgb(240, 240,240);"/>
     </van-sticky>
-    <van-popup v-model="showLoading" :overlay="false" :close-on-click-overlay="false">
-        <van-button loading type="primary" loading-type="spinner" style="background-color: grey; border-color: grey;"/>
-    </van-popup>
     <van-cell-group>
       <van-field
         v-model="username"
@@ -39,7 +36,6 @@
 export default {
   data() {
     return {
-      showLoading: false,
       username: "",
       password: "",
       password2: ""
@@ -63,21 +59,22 @@ export default {
         this.$toast("密码不一致");
         return false;
       }
-      this.showLoading=true;
+      this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
       this.postRequest("/user/register", {
         username: this.username,
         password: this.password
       }).then(resp => {
-        this.showLoading=false;
+        this.$toast.clear();
         console.log(resp);
         if(resp.data.status!=200) {this.$toast(resp.data.msg);}
         else{
           var data = resp.data;
           this.$toast(data.msg);
+          this.$store.commit("setLoginHistory", {username: this.username, password: this.password});
           if (data.status == 200) this.$router.back(-1);
         }
       }).catch(err=>{
-        this.showLoading=false;
+        this.$toast.clear();
         console.log(err);
         this.$toast("服务器异常");
       })

@@ -11,14 +11,6 @@
         style="background-color: rgb(240, 240,240);"
       />
     </van-sticky>
-    <van-popup v-model="showLoading" :overlay="false" :close-on-click-overlay="false">
-      <van-button
-        loading
-        type="primary"
-        loading-type="spinner"
-        style="background-color: grey; border-color: grey;"
-      />
-    </van-popup>
     <div class="divLabel">填写商品信息</div>
     <van-cell-group>
       <van-field v-model="goods.title" label="标题" placeholder="请输入商品标题" required />
@@ -31,6 +23,7 @@
       />
       <van-field v-model="goods.price" type="number" label="价格" placeholder="请输入商品价格" required />
       <van-field v-model="goods.superiorPrice" type="number" label="上级价格" placeholder="请输入商品上级代理价格" required />
+      <van-field v-model="goods.transportFee" type="number" label="运费" placeholder="请输入运费" required />
       <van-field v-model="goods.remain" type="number" label="库存" placeholder="请输入商品库存" required />
       <van-field v-model="goods.sales" type="number" label="销量" placeholder="请输入商品销量" required />
       <van-field
@@ -62,6 +55,10 @@
     <div style="margin: 10px 10px;">
     <van-button type="default" :disabled="disableSkuBtn" @click="onSkuClick" size="large">编辑商品规格</van-button>
     </div>
+    <div class="divLabel">满减/运费</div>
+    <div style="margin: 10px 10px;">
+    <van-button type="default" :disabled="disableSkuBtn" @click="onReduceClick" size="large">编辑满减/运费</van-button>
+    </div>
     <div style="padding: 30px 0px;"></div>
   </div>
 </template>
@@ -69,7 +66,6 @@
 export default {
   data() {
     return {
-      showLoading: false,
       disableSkuBtn: false,
       showPicker: false,
       categories: [],
@@ -84,28 +80,33 @@ export default {
         title: "",
         description: "",
         thumb: "",
-        sales: 0
+        sales: 0,
+        transportFee: 0,
       },
       fileListGoods: []
     };
   },
   mounted() {
     this.getCategoryList();
-    this.getGoodsInfo();
   },
   methods: {
     onSkuClick() {
       this.onClickRight();
       this.$router.push({ path: "/skumanager" });
     },
+    onReduceClick(){
+      this.onClickRight();
+      this.$router.push({path: "/pricereducemanager"});
+    },
     getCategoryList() {
-      this.showLoading = true;
+      this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
       this.postRequest("/category/list", {})
         .then(resp => {
-          this.showLoading = false;
+          this.$toast.clear();
           if (resp.data.status != 200) {
             this.$toast(resp.data.msg);
           } else {
+            this.getGoodsInfo();
             this.categories = resp.data.obj;
             for (var cat of this.categories) {
               this.categoryNameList.push(cat.name);
@@ -113,7 +114,7 @@ export default {
           }
         })
         .catch(err => {
-          this.showLoading = false;
+          this.$toast.clear();
           console.log(err);
           this.$toast("服务器异常");
         });
@@ -124,12 +125,12 @@ export default {
         this.disableSkuBtn = true;
         return;
       }
-      this.showLoading = true;
+      this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
       this.postRequest("/goods/get", {
         id: goodsId
       })
         .then(resp => {
-          this.showLoading = false;
+          this.$toast.clear();
           if (resp.data.status != 200) {
             this.$toast(resp.data.msg);
           } else {
@@ -143,7 +144,7 @@ export default {
           }
         })
         .catch(err => {
-          this.showLoading = false;
+          this.$toast.clear();
           console.log(err);
           this.$toast("服务器异常");
         });
@@ -162,7 +163,7 @@ export default {
     },
     onClickRight() {
       var action = this.goods.id == 0 ? "add" : "update";
-      this.showLoading = true;
+      this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
       this.postRequest("/goods/" + action, {
         id: this.goods.id,
         categoryId: this.goods.categoryId,
@@ -172,10 +173,11 @@ export default {
         title: this.goods.title,
         description: this.goods.description,
         thumb: this.goods.thumb,
-        sales: this.goods.sales
+        sales: this.goods.sales,
+        transportFee: this.goods.transportFee
       })
         .then(resp => {
-          this.showLoading=false;
+          this.$toast.clear();
           if(resp.data.status!=200) {this.$toast(resp.data.msg);}
           else{
             if (action == "add") {
@@ -187,7 +189,7 @@ export default {
           }
         })
         .catch(err => {
-          this.showLoading=false;
+          this.$toast.clear();
           console.log(err);
           this.$toast("服务器异常");
         });
@@ -206,12 +208,12 @@ export default {
       for (var file of files) {
         var needle = "base64,";
         var start = file.content.indexOf(needle) + needle.length;
-        this.showLoading=true;
+        this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
         this.postRequest("/picture/add", {
           base64Data: file.content.substr(start)
         })
           .then(resp => {
-            this.showLoading=false;
+            this.$toast.clear();
             if(resp.data.status!=200) {this.$toast(resp.data.msg);}
             else{
               obj.thumb += "," + resp.data.obj;
@@ -223,7 +225,7 @@ export default {
             }
           })
           .catch(err => {
-            this.showLoading=false;
+            this.$toast.clear();
             console.log(err);
             this.$toast("服务器异常");
           });

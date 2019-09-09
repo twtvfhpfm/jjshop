@@ -11,6 +11,7 @@ public class Goods {
     @Getter @Setter int categoryId;
     @Getter @Setter BigDecimal price;
     @Getter @Setter BigDecimal superiorPrice;
+    @Getter @Setter BigDecimal transportFee;
     @Getter @Setter int remain;
     @Getter @Setter int sales;
     @Getter @Setter boolean isDeleted;
@@ -21,7 +22,7 @@ public class Goods {
 
     public static Goods of(int categoryId, BigDecimal price, BigDecimal superiorPrice,
                            int remain, String title, String description, String thumb, int id,
-                           int sales){
+                           int sales, BigDecimal transportFee){
         Goods g = new Goods();
         g.setCategoryId(categoryId);
         g.setDescription(description);
@@ -32,6 +33,7 @@ public class Goods {
         g.setThumb(thumb);
         g.setId(id);
         g.setSales(sales);
+        g.setTransportFee(transportFee);
         return g;
     }
 }

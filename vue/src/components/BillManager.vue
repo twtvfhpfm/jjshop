@@ -3,9 +3,6 @@
       <van-sticky>
     <van-nav-bar title="账单管理" left-text="" left-arrow @click-left="$router.back(-1);" style="background-color: rgb(240, 240,240);"/>
     </van-sticky>
-    <van-popup v-model="showLoading" :overlay="false" :close-on-click-overlay="false">
-        <van-button loading type="primary" loading-type="spinner" style="background-color: grey; border-color: grey;"/>
-    </van-popup>
 
     <van-tabs v-model="active" animated swipeable lazy-render color="#1989fa">
         <van-tab title="日报">
@@ -78,7 +75,6 @@ export default {
     return {
       currentRate:[0,0,0],
       active: 0,
-      showLoading: [false,false,false],
       list: [[],[],[]],
       loading: [false,false,false],
       finished: [false,false,false],
@@ -97,12 +93,12 @@ export default {
   },
   methods: {
     getBill(type){
-      this.showLoading=true;
+      this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
       this.postRequest("/bill/get", {
         cursor: this.cursor[type],
         type: type
       }).then(resp =>{
-        this.showLoading=false;
+        this.$toast.clear();
         if(resp.data.status!=200) {this.$toast(resp.data.msg);}
         else{
           var data = resp.data;
@@ -119,7 +115,7 @@ export default {
           }
         }
       }).catch(err=>{
-        this.showLoading=false;
+        this.$toast.clear();
         console.log(err);
         this.$toast("服务器异常");
       })

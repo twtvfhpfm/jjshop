@@ -8,16 +8,13 @@
         <img :src="thumb" />
       </van-swipe-item>
     </van-swipe>
-    <van-popup v-model="showLoading" :overlay="false" :close-on-click-overlay="false">
-        <van-button loading type="primary" loading-type="spinner" style="background-color: grey; border-color: grey;"/>
-    </van-popup>
     <van-cell-group>
       <van-cell>
         <div class="goods-title">{{ goods.title }}</div>
-        <div class="goods-price">{{ formatPrice(goods.price*100) }}</div>
+        <div class="goods-price">{{ formatPrice(goods.price) }}</div>
       </van-cell>
       <van-cell class="goods-express">
-        <van-col span="6">运费：0</van-col>
+        <van-col span="6">运费：{{formatPrice(goods.transportFee)}}</van-col>
         <van-col span="9">剩余：{{ goods.remain }}</van-col>
         <van-col span="9">销量：{{ goods.sales }}</van-col>
       </van-cell>
@@ -27,6 +24,9 @@
       <van-cell title="查看商品详情" is-link @click="sorry" />
     </van-cell-group-->
     <div style="text-align:left;padding: 10px 10px;">{{goods.description}}</div>
+      <div v-if="goods.thumbs.length>1" >
+        <img v-for="thumb in goods.thumbs" :key="thumb" :src="thumb" style="width:100%;"/>
+      </div>
     <div style="padding: 30px 0px;"/>
     <van-submit-bar style="bottom: 50px;" button-text="加入购物车" @submit="onClickShowSku" />
     <van-sku
@@ -88,7 +88,6 @@ export default {
         thumbs: [],
         sales: 0,
       },
-      showLoading:false,
       quota: 0,
       quotaUsed: 0,
       show: false,
@@ -114,10 +113,10 @@ export default {
   },
   methods: {
     getGoods(){
-      this.showLoading=true;
+      this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
       this.postRequest("/goods/get",{id: this.$store.state.goods.id})
       .then(resp=>{
-        this.showLoading=false;
+        this.$toast.clear();
         if(resp.data.status!=200){
           this.$toast(resp.data.msg);
         }else{
@@ -174,13 +173,13 @@ export default {
           }
         }
       }).catch(err=>{
-        this.showLoading=false;
+        this.$toast.clear();
         console.log(err);
         this.$toast("服务器异常");
       })
     },
-    formatPrice() {
-      return "¥" + (this.goods.price).toFixed(2);
+    formatPrice(price) {
+      return "￥" + (price/1).toFixed(2);
     },
     sorry() {
       Toast("暂无后续逻辑~");
@@ -199,7 +198,7 @@ export default {
       var skuId = this.sku.none_sku ? 0 : data.selectedSkuComb.id;
       console.log(data);
       this.show = false;
-      this.showLoading=true;
+      this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
       this.postRequest("/cart/add",{
         uid: this.$store.state.user.id,
         goodsId: data.goodsId,
@@ -207,10 +206,10 @@ export default {
         num: data.selectedNum,
         ordered: 0
       }).then(resp=>{
-        this.showLoading=false;
+        this.$toast.clear();
         this.$toast(resp.data.msg);
       }).catch(err=>{
-        this.showLoading=false;
+        this.$toast.clear();
         console.log(err);
         this.$toast("添加失败");
       })

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dev.jnx.jjshop.dao.PriceReduceDao">
+    <insert id="add" useGeneratedKeys="true" keyProperty="id" keyColumn="id"
+            parameterType="java.util.Map">
+    insert into PriceReduce (goodsId, amount, superiorAmount, transportFee, numCond)
+    values(#{goodsId}, #{amount}, #{superiorAmount}, #{transportFee}, #{numCond})
+  </insert>
+
+    <update id="update" parameterType="java.util.Map">
+        update PriceReduce set amount=#{amount}, superiorAmount=#{superiorAmount},
+        transportFee=#{transportFee}, numCond=#{numCond} where id=#{id}
+    </update>
+
+    <select id="getByGoodsId" resultType="dev.jnx.jjshop.model.PriceReduce">
+        select * from PriceReduce where goodsId=#{goodsId} order by numCond desc
+    </select>
+
+    <delete id="delete">
+        delete from PriceReduce where id=#{id}
+    </delete>
+</mapper>

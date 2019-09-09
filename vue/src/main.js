@@ -49,14 +49,6 @@ VueClipboard.config.autoSetContainer = true
 Vue.use(VueClipboard)
 
 router.beforeEach((to, from, next)=> {
-    console.log(to);
-    if (from.path == '/goodslist'){
-      if (to.path == '/goodsinfo'){
-        from.meta.keepAlive=true;
-      }else{
-        from.meta.keepAlive=false;
-      }
-    }
     if (to.name == 'Login') {
       next();
       return;
@@ -73,7 +65,7 @@ router.beforeEach((to, from, next)=> {
     var name = store.state.user.username;
     if (name == '未登录') {
       if (to.meta.requireAuth || to.name == null) {
-        next({path: '/login', query: {redirect: to.path}})
+        next({path: '/login'})
       } else {
         next();
       }

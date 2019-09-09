@@ -16,19 +16,19 @@ public class CartController {
     private CartService cartService;
 
     @RequestMapping("/add")
-    public RespBean add(int uid, int goodsId, int skuListId, int num, int ordered){
-        Cart cart = Cart.of(0, uid, BigDecimal.ZERO, BigDecimal.ZERO, goodsId, skuListId, num, ordered);
+    public RespBean add(int currentUid, int goodsId, int skuListId, int num, int ordered){
+        Cart cart = Cart.of(0, currentUid, BigDecimal.ZERO, BigDecimal.ZERO, goodsId, skuListId, num, ordered);
         return cartService.add(cart);
     }
 
     @RequestMapping("/delete")
-    public RespBean delete(int id, int uid){
-        return cartService.delete(id, uid);
+    public RespBean delete(int id, int currentUid){
+        return cartService.delete(id, currentUid);
     }
 
     //@RequestMapping("/update")
-    //public RespBean update(int uid, int goodsId, int skuListId, int num, int ordered, int id){
-    //    Cart cart = Cart.of(id, uid, goodsId, skuListId, num, ordered);
+    //public RespBean update(int currentUid, int goodsId, int skuListId, int num, int ordered, int id){
+    //    Cart cart = Cart.of(id, currentUid, goodsId, skuListId, num, ordered);
     //    return cartService.update(cart);
     //}
 
@@ -38,12 +38,12 @@ public class CartController {
     }
 
     @RequestMapping("/getbyuid")
-    public RespBean getByUid(int uid){
-        return cartService.getByUid(uid);
+    public RespBean getByUid(int currentUid){
+        return cartService.getByUid(currentUid);
     }
 
     @RequestMapping("/changenum")
-    public RespBean changeNum(int delta, int id, int uid){
-        return cartService.changeNum(delta, id, uid);
+    public RespBean changeNum(int delta, int id, int currentUid){
+        return cartService.changeNum(delta, id, currentUid);
     }
 }

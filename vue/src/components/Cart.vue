@@ -9,14 +9,6 @@
         style="background-color: rgb(240, 240,240);"
       />
     </van-sticky>
-    <van-popup v-model="showLoading" :overlay="false" :close-on-click-overlay="false">
-      <van-button
-        loading
-        type="primary"
-        loading-type="spinner"
-        style="background-color: grey; border-color: grey;"
-      />
-    </van-popup>
     <van-checkbox-group class="card-goods" v-model="checkedGoods">
 
       <van-swipe-cell :on-close="onClose" v-for="item in goods" :key="item.id" :name="item.id">
@@ -77,7 +69,6 @@ export default {
   },
   data() {
     return {
-      showLoading: false,
       checkedGoods: [],
       goods: [],
       cartEmpty: false
@@ -112,14 +103,14 @@ export default {
       this.changeNum(item, 1);
     },
     changeNum(item, delta){
-      this.showLoading=true;
+      this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
       item.num+=delta;
       this.postRequest("/cart/changenum",{delta: delta, id: item.id})
       .then(resp=>{
-        this.showLoading=false;
+        this.$toast.clear();
         if(resp.data.status!=200) {this.$toast(resp.data.msg);}
       }).catch(err=>{
-        this.showLoading=false;
+        this.$toast.clear();
         console.log(err);
         this.$toast("服务器异常");
       })
@@ -137,12 +128,12 @@ export default {
       }
     },
     getCart() {
-      this.showLoading = true;
+      this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
       this.postRequest("/cart/getbyuid", {
         uid: this.$store.state.user.id
       })
         .then(resp => {
-          this.showLoading = false;
+          this.$toast.clear();
           if (resp.data.status != 200) {
             this.$toast(resp.data.msg);
           } else {
@@ -157,9 +148,11 @@ export default {
               }
               var goods = {
                 id: "" + cartModel.id,
+                goodsId: cartModel.goods.id,
                 title: cartModel.goods.title,
                 desc: cartModel.goods.description,
                 price: cartModel.goods.price * 100,
+                transportFee: cartModel.goods.transportFee,
                 num: cartModel.num,
                 thumb: thumb,
                 s1name: "",
@@ -193,7 +186,7 @@ export default {
           }
         })
         .catch(err => {
-          this.showLoading = false;
+          this.$toast.clear();
           console.log(err);
           this.$toast("服务器异常");
         });
@@ -206,12 +199,12 @@ export default {
         })
         .then(() => {
           // on confirm
-          this.showLoading = true;
+          this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
           this.postRequest("/cart/delete", {
             id: item.id - "0"
           })
             .then(resp => {
-              this.showLoading = false;
+              this.$toast.clear();
               this.$toast(resp.data.msg);
               if (resp.data.status == 200) {
                 var idx = this.goods.indexOf(item);
@@ -219,7 +212,7 @@ export default {
               }
             })
             .catch(err => {
-              this.showLoading = false;
+              this.$toast.clear();
               console.log(err);
               this.$toast("服务器异常");
             });

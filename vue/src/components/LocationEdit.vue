@@ -3,9 +3,6 @@
     <van-sticky>
     <van-nav-bar title="地址编辑" left-text="" left-arrow @click-left="onClickLeft" style="background-color: rgb(240, 240,240);"/>
     </van-sticky>
-    <van-popup v-model="showLoading" :overlay="false" :close-on-click-overlay="false">
-        <van-button loading type="primary" loading-type="spinner" style="background-color: grey; border-color: grey;"/>
-    </van-popup>
     <van-address-edit
       :area-list="areaList"
       :address-info="addressInfo"
@@ -21,7 +18,6 @@ import { address } from "../../static/area.js";
 export default {
   data() {
     return {
-      showLoading: false,
         mode: "add",
       areaList: address,
       searchResult: [],
@@ -55,18 +51,18 @@ export default {
       content["uid"] = this.$store.state.user.id;
       content["mode"] = this.mode;
       console.log(content);
-      this.showLoading=true;
+      this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
       this.postRequest("/address/add", content).then(resp => {
-        this.showLoading=false;
+        this.$toast.clear();
         var data = resp.data;
         this.$toast(data.msg);
         this.$router.back(-1);
       });
     },
     onDelete(content) {
-      this.showLoading=true;
+      this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
       this.postRequest("/address/delete", content).then(resp => {
-        this.showLoading=false;
+        this.$toast.clear();
         if (this.$store.state.address.id == content.id){
           this.$store.commit('setAddress', {});
         }

@@ -34,5 +34,9 @@ public class UserController {
         if (lastMinId == 0) lastMinId = Integer.MAX_VALUE;
         return userService.list(lastMinId, text);
     }
+    @RequestMapping("/listall")
+    public RespBean listAll(){
+        return userService.listAll();
+    }
 
 }

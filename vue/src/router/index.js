@@ -27,29 +27,50 @@ import Alipay from '@/components/Alipay'
 import UserManager from '@/components/UserManager'
 import BillManager from '@/components/BillManager'
 import BatchSkuListManager from '@/components/BatchSkuListManager'
+import PriceReduceManager from '@/components/PriceReduceManager'
+import CouponOffer from '@/components/CouponOffer'
+import Coupon from '@/components/Coupon'
 
 Vue.use(Router)
 
 export default new Router({
   routes: [
     {
-      path: '/login',
-      name: 'Login',
-      component: Login,
-      hidden: true
-    }, 
-    {
-      path: '/register',
-      name: 'Register',
-      component: Register,
-      hidden: true
-    }, 
-    {
       path: '/',
       name: '主页',
       component: Home,
       hidden: true,
       children: [
+        {
+          path: '/coupon',
+          name: 'Coupon',
+          component: Coupon,
+          hidden: true
+        }, 
+        {
+          path: '/couponoffer',
+          name: 'CouponOffer',
+          component: CouponOffer,
+          hidden: true
+        }, 
+        {
+          path: '/pricereducemanager',
+          name: 'PriceReduceManager',
+          component: PriceReduceManager,
+          hidden: true
+        }, 
+        {
+          path: '/login',
+          name: 'Login',
+          component: Login,
+          hidden: true
+        }, 
+        {
+          path: '/register',
+          name: 'Register',
+          component: Register,
+          hidden: true
+        }, 
         {
           path: '/cart',
           name: '购物车',

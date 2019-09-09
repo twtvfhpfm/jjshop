@@ -9,14 +9,6 @@
         style="background-color: rgb(240, 240,240);"
       />
     </van-sticky>
-    <van-popup v-model="showLoading" :overlay="false" :close-on-click-overlay="false">
-      <van-button
-        loading
-        type="primary"
-        loading-type="spinner"
-        style="background-color: grey; border-color: grey;"
-      />
-    </van-popup>
     <van-cell icon="location-o">
       <div>{{goodsOrder.address.name}}, {{goodsOrder.address.mobile}}</div>
       <div>{{goodsOrder.address.province+goodsOrder.address.city+goodsOrder.address.county+goodsOrder.address.addressDetail}}</div>
@@ -121,7 +113,6 @@ export default {
       ],
       showPicker: false,
       goodsOrder: {},
-      showLoading: false,
       btnText: "",
       btnDisable: false,
       fullShipperList:[
@@ -150,10 +141,10 @@ export default {
   },
   methods: {
       queryLogistic(){
-          this.showLoading=true;
+          this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
           this.postRequest("/logistics/getlogistic", {orderId: this.goodsOrder.orderId})
           .then(resp=>{
-              this.showLoading=false;
+              this.$toast.clear();
               if(resp.data.status!=200){this.$toast(resp.data.msg);}
               else{
                   var response = JSON.parse(resp.data.obj.response);
@@ -167,7 +158,7 @@ export default {
                   }
               }
           }).catch(err=>{
-              this.showLoading=false;
+              this.$toast.clear();
               console.log(err);
               this.$toast("服务器异常");
           })
@@ -177,7 +168,7 @@ export default {
               this.$toast("请选择快递公司");
               return;
           }
-          this.showLoading=true;
+          this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
           var customerName = "";
           if(this.shipperRadio=="SF"){
               customerName=this.goodsOrder.address.mobile.substr(-4);
@@ -189,7 +180,7 @@ export default {
               logisticCode: this.logisticCode
               })
           .then(resp=>{
-              this.showLoading=false;
+              this.$toast.clear();
               if(resp.data.status!=200){this.$toast(resp.data.msg);}
               else{
                   this.$toast("保存成功");
@@ -197,16 +188,16 @@ export default {
                   this.queryLogistic();
               }
           }).catch(err=>{
-              this.showLoading=false;
+              this.$toast.clear();
               console.log(err);
               this.$toast("服务器异常");
           })
       },
       setLogistic(){
-          this.showLoading=true;
+          this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
           this.postRequest("/logistics/get",{orderId: this.goodsOrder.orderId})
           .then(resp=>{
-              this.showLoading=false;
+              this.$toast.clear();
               if(resp.data.status!=200){this.$toast(resp.data.msg);}
              else{
                   this.logisticCode=resp.data.obj.logisticCode;
@@ -215,7 +206,7 @@ export default {
                   this.logisticShow = true;
               
           }).catch(err=>{
-              this.showLoading=false;
+              this.$toast.clear();
               console.log(err);
               this.$toast("服务器异常");
           })
@@ -225,10 +216,10 @@ export default {
               this.$toast("请输入运单号");
               return;
           }
-          this.showLoading=true;
+          this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
           this.postRequest("/logistics/getshippercode",{logisticCode: this.logisticCode})
           .then(resp=>{
-              this.showLoading=false;
+              this.$toast.clear();
               if(resp.data.status!=200){this.$toast(resp.data.msg);}
               else{
                   var response = JSON.parse(resp.data.obj);
@@ -244,7 +235,7 @@ export default {
                   }
               }
           }).catch(err=>{
-              this.showLoading=false;
+              this.$toast.clear();
               console.log(err);
               this.$toast("服务器异常");
           })
@@ -262,13 +253,13 @@ export default {
     onPickerConfirm(value) {
       for (var i = 0; i < this.statusList.length; i++) {
         if (this.statusList[i] == value) {
-          this.showLoading = true;
+          this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
           this.postRequest("/goodsorder/updatestatus", {
             orderId: this.goodsOrder.orderId,
             status: i
           })
             .then(resp => {
-              this.showLoading = false;
+              this.$toast.clear();
               if (resp.data.status == 500) {
                 this.$toast(resp.data.msg);
               } else {
@@ -279,7 +270,7 @@ export default {
               }
             })
             .catch(err => {
-              this.showLoading = false;
+              this.$toast.clear();
               console.log(err);
               this.$toast("服务器异常");
             });
@@ -291,12 +282,12 @@ export default {
       }
     },
     getGoodsOrder() {
-      this.showLoading = true;
+      this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
       this.postRequest("/goodsorder/get", {
         orderId: this.$store.state.goodsOrder.orderId
       })
         .then(resp => {
-          this.showLoading = false;
+          this.$toast.clear();
           if (resp.data.status != 200) {
             this.$toast(resp.data.msg);
           } else {
@@ -325,7 +316,7 @@ export default {
           }
         })
         .catch(err => {
-          this.showLoading = false;
+          this.$toast.clear();
           console.log(err);
           this.$toast("服务器异常");
         });

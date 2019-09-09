@@ -22,4 +22,8 @@
         </if>
         order by id desc limit 20
     </select>
+
+    <select id="listAll" resultType="java.util.Map">
+        select id,username from User order by convert(username using gbk);
+    </select>
 </mapper>

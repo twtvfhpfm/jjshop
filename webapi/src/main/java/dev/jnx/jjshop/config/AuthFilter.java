@@ -7,6 +7,7 @@ import dev.jnx.jjshop.model.UserModel;
 import dev.jnx.jjshop.util.NetUtil;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -17,23 +18,28 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 @Component
 @WebFilter(urlPatterns = "/**")
 public class AuthFilter implements Filter {
     Logger logger = Logger.getLogger(this.getClass());
+    @Value("${appToken}") private String appToken;
     //管理员才能访问的接口
     private static final String[] authAdmin= {"/category/add", "/category/delete",
             "/chargecode/addwechat", "/chargecode/addalipay", "/chargecode/list", "/chargecode/delete",
+            "/chargecode/getwork",
             "/goods/update", "/goods/delete",
             "/goodsorder/updatestatus", "/goodsorder/list",
             "/picture/add", "/picture/delete",
             "/sku/addorupdate", "/sku/add", "/sku/update", "/sku/delete",
             "/skulist/addorupdate", "/skulist/add", "/skulist/update", "/skulist/delete",
-            "/user/update", "/user/list",
+            "/user/update", "/user/list", "/user/listall",
             "/logistics/add", "/logistics/update", "/logistics/getshippercode", "/logistics/get",
-            "/bill/.*"};
+            "/bill/.*",
+            "/pricereduce/add", "/pricereduce/update", "/pricereduce/delete",
+            "/coupon/offer"};
     //普通用户登录才能访问的接口
     private static final String[] authUser = {"/address/.*", "/cart/.*", "/goodsorder/.*",
             "/logistics/getlogistic"};
@@ -46,22 +52,34 @@ public class AuthFilter implements Filter {
         //record log
         Map<String, String[]> map = req.getParameterMap();
 
-        StringBuilder sb = new StringBuilder();
-        sb.append(NetUtil.getRemoteIp(req)).append(" - ");
-        sb.append(req.getRequestURI()).append(": ");
-        if(!req.getRequestURI().equals("/picture/add"))
-        for(Map.Entry entry: map.entrySet()){
-            sb.append(entry.getKey()).append("=");
-            for(String s: (String[])entry.getValue()){
-                sb.append(s).append(",");
-            }
+        if (!req.getRequestURI().equals("/chargecode/getwork")) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(NetUtil.getRemoteIp(req)).append(" - ");
+            sb.append(req.getRequestURI()).append(": ");
+            if (!req.getRequestURI().equals("/picture/add"))
+                for (Map.Entry entry : map.entrySet()) {
+                    sb.append(entry.getKey()).append("=");
+                    for (String s : (String[]) entry.getValue()) {
+                        sb.append(s).append(",");
+                    }
+                }
+            logger.info(sb.toString());
         }
-        logger.info(sb.toString());
 
         UserModel user = null;
         String token = req.getHeader("token");
         if(token != null && !token.isEmpty()){
-            user = (UserModel) redisTemplate.opsForValue().get(token);
+            if (token.equals(appToken)){
+                user = new UserModel();
+                user.setId(0);
+                user.setRole(1);
+            }
+            else {
+                user = (UserModel) redisTemplate.opsForValue().get(token);
+                if (user != null) {
+                    redisTemplate.expire(token, 7, TimeUnit.DAYS);
+                }
+            }
         }
         String url = req.getRequestURI();
         for(String regex: authAdmin){

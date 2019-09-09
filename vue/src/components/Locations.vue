@@ -3,9 +3,6 @@
     <van-sticky>
     <van-nav-bar title="地址管理" left-text="" left-arrow @click-left="onClickLeft" style="background-color: rgb(240, 240,240);"/>
     </van-sticky>
-    <van-popup v-model="showLoading" :overlay="false" :close-on-click-overlay="false">
-        <van-button loading type="primary" loading-type="spinner" style="background-color: grey; border-color: grey;"/>
-    </van-popup>
     <van-address-list
       v-model="chosenAddressId"
       :list="list"
@@ -19,7 +16,6 @@
 export default {
   data() {
     return {
-      showLoading: false,
       chosenAddressId: 0,
       list: [],
       disabledList: []
@@ -27,11 +23,11 @@ export default {
   },
   mounted(){
       var uid = this.$store.state.user.id;
-      this.showLoading=true;
+      this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
       this.postRequest('/address/list', {
           uid
       }).then(resp => {
-        this.showLoading=false;
+        this.$toast.clear();
           var data = resp.data;
           if (data.status == 200){
               for(var addr of data.obj){

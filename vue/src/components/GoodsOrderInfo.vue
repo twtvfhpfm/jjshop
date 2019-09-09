@@ -9,14 +9,6 @@
         style="background-color: rgb(240, 240,240);"
       />
     </van-sticky>
-    <van-popup v-model="showLoading" :overlay="false" :close-on-click-overlay="false">
-      <van-button
-        loading
-        type="primary"
-        loading-type="spinner"
-        style="background-color: grey; border-color: grey;"
-      />
-    </van-popup>
     <van-action-sheet v-model="logisticShow" :title="'运单号：'+logisticCode" close-on-click-overlay>
         <van-steps direction="vertical" :active="0">
         <van-step v-for="i2 in logisticList" :key="i2.AcceptTime">
@@ -63,7 +55,6 @@ export default {
       logisticShow: false,
       logisticCode: "",
       goodsOrder: {},
-      showLoading: false,
       btnText: "",
       btnDisable: false
     };
@@ -73,10 +64,10 @@ export default {
   },
   methods: {
       queryLogistic(){
-          this.showLoading=true;
+          this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
           this.postRequest("/logistics/getlogistic", {orderId: this.goodsOrder.orderId})
           .then(resp=>{
-              this.showLoading=false;
+              this.$toast.clear();
               if(resp.data.status!=200){this.$toast(resp.data.msg);}
               else{
                   this.logisticCode=resp.data.obj.logisticCode;
@@ -92,7 +83,7 @@ export default {
                   this.logisticShow = true;
               }
           }).catch(err=>{
-              this.showLoading=false;
+              this.$toast.clear();
               console.log(err);
               this.$toast("服务器异常");
           })
@@ -104,12 +95,12 @@ export default {
           message: "确认收货?"
         })
         .then(() => {
-          this.showLoading = true;
+          this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
           this.postRequest("/goodsorder/confirmreceipt", {
             orderId: this.goodsOrder.orderId
           })
             .then(resp => {
-              this.showLoading = false;
+              this.$toast.clear();
               if (resp.data.status != 200) {
                 this.$toast(resp.data.msg);
               } else {
@@ -118,7 +109,7 @@ export default {
               }
             })
             .catch(err => {
-              this.showLoading = false;
+              this.$toast.clear();
               console.log(err);
               this.$toast("服务器异常");
             });
@@ -139,12 +130,12 @@ export default {
       }
     },
     getGoodsOrder() {
-      this.showLoading = true;
+      this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
       this.postRequest("/goodsorder/get", {
         orderId: this.$store.state.goodsOrder.orderId
       })
         .then(resp => {
-          this.showLoading = false;
+          this.$toast.clear();
           if (resp.data.status != 200) {
             this.$toast(resp.data.msg);
           } else {
@@ -178,7 +169,7 @@ export default {
           }
         })
         .catch(err => {
-          this.showLoading = false;
+          this.$toast.clear();
           console.log(err);
           this.$toast("服务器异常");
         });

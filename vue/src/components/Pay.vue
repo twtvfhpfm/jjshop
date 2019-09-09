@@ -4,9 +4,6 @@
     <van-nav-bar title="收银台" left-text="" left-arrow @click-left="onClickLeft" style="background-color: rgb(240, 240,240);"/>
     </van-sticky>
     
-    <van-popup v-model="showLoading" :overlay="false" :close-on-click-overlay="false">
-        <van-button loading type="primary" loading-type="spinner" loading-text="正在生成二维码" style="background-color: grey; border-color: grey;"></van-button>
-    </van-popup>
     <h1 class="redText">￥{{formatPrice(totalPrice)}}</h1>
     <div v-if="showWechat">
       <van-divider :style="{ color: '#1989fa', borderColor: '#1989fa', padding: '0 16px' }">
@@ -30,7 +27,6 @@
 export default {
   data() {
     return {
-      showLoading: false,
         radio: '0',
         showWechat: false,
         showAlipay: false,
@@ -42,7 +38,7 @@ export default {
     };
   },
   mounted() {
-    this.showLoading = true;
+    this.$toast.loading({duration:0, forbidClick:true, message:'正在生成二维码...'});
     this.timer = setInterval(this.checkWeChatQRCode, 2000);
   },
   computed: {
@@ -61,7 +57,7 @@ export default {
     checkWeChatQRCode(){
       this.postRequest("/chargecode/checkwechatqrcode",{orderId: this.orderId}).then(resp=>{
         if (resp.data.status == 200){
-          this.showLoading=false;
+          this.$toast.clear();
           clearInterval(this.timer);
           this.count = 0;
           this.chargeCodeUrl="/api/chargecode/getwechatqrcode?orderId="+this.orderId;
@@ -69,7 +65,7 @@ export default {
           this.showAlipay=true;
         }else{
           if (this.count++ == 4){
-          this.showLoading=false;
+          this.$toast.clear();
           clearInterval(this.timer);
           this.count = 0;
           this.chargeCodeUrl="/api/chargecode/getwechat?amount=0";
@@ -78,7 +74,7 @@ export default {
           }
         }
       }).catch(err=>{
-          this.showLoading=false;
+          this.$toast.clear();
           clearInterval(this.timer);
           this.count = 0;
           this.chargeCodeUrl="/api/chargecode/getwechat?amount=0";

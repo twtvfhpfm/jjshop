@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 @Service
@@ -103,5 +104,10 @@ public class GoodsService {
     public RespBean getCountInCategory(int categoryId){
         int count = goodsDao.getCountInCategory(categoryId);
         return RespBean.ok("获取成功", count);
+    }
+
+    public RespBean listAll(){
+        List<Map<String, Object>> ul = goodsDao.listAll();
+        return RespBean.ok("获取成功",ul);
     }
 }

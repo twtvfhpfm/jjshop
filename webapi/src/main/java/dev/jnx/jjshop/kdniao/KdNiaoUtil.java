@@ -53,6 +53,7 @@ public class KdNiaoUtil {
         try(CloseableHttpResponse response = httpClient.execute(httpPost)){
             HttpEntity entity1 = response.getEntity();
             result = EntityUtils.toString(entity1);
+            logger.info("快递鸟返回: " + result);
         }
         catch(Exception ex){
             logger.error("快递鸟query失败: " + ex.getMessage());

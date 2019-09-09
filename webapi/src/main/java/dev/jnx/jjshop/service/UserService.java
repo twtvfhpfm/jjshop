@@ -13,6 +13,7 @@ import org.springframework.util.DigestUtils;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -71,5 +72,10 @@ public class UserService {
         }else msg="continue";
 
         return RespBean.ok(msg,ul);
+    }
+
+    public RespBean listAll(){
+        List<Map<String, Object>> ul = userDao.listAll();
+        return RespBean.ok("获取成功",ul);
     }
 }

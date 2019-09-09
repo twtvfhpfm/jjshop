@@ -19,15 +19,12 @@
         <van-icon name="logistics" />已发货
       </van-col>
     </van-row-->
-    <van-popup v-model="showLoading" :overlay="false" :close-on-click-overlay="false">
-        <van-button loading type="primary" loading-type="spinner" style="background-color: grey; border-color: grey;"/>
-    </van-popup>
     <van-cell-group class="user-group">
       <van-cell icon="records" title="全部订单" is-link to="/goodsorderlist"/>
     </van-cell-group>
 
     <van-cell-group class="user-group">
-      <van-cell icon="gold-coin-o" title="优惠券" is-link to="/not_implemented" />
+      <van-cell icon="gold-coin-o" title="优惠券" is-link to="/coupon" />
       <van-cell icon="location-o" title="收货地址" is-link to="locations" />
     </van-cell-group>
     <van-cell-group class="user-group" v-if="$store.state.user.role==1">
@@ -46,7 +43,6 @@ export default {
   data() {
     return {
       username: this.$store.state.user.username,
-      showLoading: false,
       loggedin: window.localStorage.getItem("user") != null
     };
   },
@@ -59,21 +55,22 @@ export default {
   },
   methods: {
     onClickExit() {
-      this.showLoading=true;
+      this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
       this.postRequest("/user/logout")
         .then(resp => {
-          this.showLoading=false;
+          this.$toast.clear();
           if(resp.data.status!=200) {this.$toast(resp.data.msg);}
           else{
               console.log(resp);
             this.$toast(resp.data.msg);
+            this.$store.commit("removeLoginHistory");
             this.$store.commit("logout");
             console.log(this.loggedin);
             this.loggedin = false;
           }
         })
         .catch(err => {
-          this.showLoading=false;
+          this.$toast.clear();
           console.log(err);
           this.$toast("服务器异常");
         });

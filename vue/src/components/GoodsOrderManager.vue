@@ -22,14 +22,6 @@
         </van-search>
       </form>
     </van-sticky>
-    <van-popup v-model="showLoading" :overlay="false" :close-on-click-overlay="false">
-      <van-button
-        loading
-        type="primary"
-        loading-type="spinner"
-        style="background-color: grey; border-color: grey;"
-      />
-    </van-popup>
 
         <van-list
       v-model="loading"
@@ -43,7 +35,7 @@
         <div v-for="item in list" :key="item.id" @click="onClick(item)" style="margin: 0px 10px;margin-bottom: 10px;background-color:white;border-radius: 10px;">
             <van-row style="padding-top: 10px;">
                 <van-col span="17" offset="1" style="text-align: left;">订单号：<span>{{item.orderId}}</span></van-col>
-                <van-col span="4" offset="1"><div style="color: red;font-size:small;">{{item.statusText}}</div></van-col>
+                <van-col span="4" offset="1"><div :style="statusStyle(item.status)">{{item.statusText}}</div></van-col>
             </van-row>
             <van-divider/>
             <van-row style="padding-bottom: 10px;">
@@ -60,7 +52,6 @@ export default {
   data() {
     return {
         value: "",
-      showLoading: false,
       list: [
           //{orderId: "", status: 0, statusText: "", totalPrice: 0, title:[]}
       ],
@@ -70,7 +61,24 @@ export default {
       lastMinId: 0
     };
   },
+  computed:{
+  },
   methods: {
+    statusStyle(status) {
+      if (status == 0){
+        return {color: 'red', fontSize: 'small'};
+      }else if (status == 1){
+        return {color: 'green', fontSize: 'small'};
+      }else if (status == 2){
+        return {color: 'blue', fontSize: 'small'};
+      }else if (status == 3){
+        return {color: 'yellow', fontSize: 'small'};
+      }else if (status == 4){
+        return {color: 'grey', fontSize: 'small'};
+      }else if (status == 5){
+        return {color: 'grey', fontSize: 'small'};
+      }
+    },
       onClick(item){
           this.$store.commit("setGoodsOrderId", item.orderId);
           this.$router.push({path:"/goodsorderinfomanager"});
@@ -87,12 +95,12 @@ export default {
        this.getOrderList("");
     },
     getOrderList(text){
-        this.showLoading=true;
+        this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
         this.postRequest("/goodsorder/list",{
             lastMinId: this.lastMinId,
             text: text
         }).then(resp=>{
-            this.showLoading=false;
+            this.$toast.clear();
             if(resp.data.status!=200) {this.$toast(resp.data.msg);}
             else{
             if (resp.data.msg=="end") this.finished=true;
@@ -121,7 +129,7 @@ export default {
             }
         }).catch(err=>{
             this.loading=false;
-            this.showLoading=false;
+            this.$toast.clear();
             this.error=true;
             console.log(err);
             this.$toast("服务器异常");

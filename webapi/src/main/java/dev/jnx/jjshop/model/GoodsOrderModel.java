@@ -30,9 +30,10 @@ public class GoodsOrderModel extends GoodsOrder {
         @Setter @Getter private int imgId;
         @Setter @Getter private List<String> tagNames;
         @Setter @Getter private BigDecimal price;
+        @Setter @Getter private BigDecimal transportFee;
 
         public static GoodsInfo of(int goodsId, int num, String title, String description,
-                                   int imgId, List<String> tagNames, BigDecimal price){
+                                   int imgId, List<String> tagNames, BigDecimal price, BigDecimal transportFee){
             GoodsInfo g = new GoodsInfo();
             g.setGoodsId(goodsId);
             g.setNum(num);
@@ -41,13 +42,15 @@ public class GoodsOrderModel extends GoodsOrder {
             g.setImgId(imgId);
             g.setTagNames(tagNames);
             g.setPrice(price);
+            g.setTransportFee(transportFee);
             return g;
         }
     }
 
     public void addGoods(int goodsId, int num, String title, String description,
-                         int imgId, List<String> tagNames, BigDecimal price){
-        goodsList.add(GoodsInfo.of(goodsId, num, title, description, imgId, tagNames, price));
+                         int imgId, List<String> tagNames, BigDecimal price,
+                         BigDecimal transportFee){
+        goodsList.add(GoodsInfo.of(goodsId, num, title, description, imgId, tagNames, price, transportFee));
     }
 
 

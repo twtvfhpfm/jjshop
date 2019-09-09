@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public interface GoodsDao {
@@ -17,4 +18,5 @@ public interface GoodsDao {
     void delete(int id);
     int update(Goods goods);
     int getCountInCategory(int categoryId);
+    List<Map<String, Object>> listAll();
 }

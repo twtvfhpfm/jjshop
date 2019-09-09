@@ -1,13 +1,5 @@
 <template>
     <div>
-    <van-popup v-model="showLoading" :overlay="false" :close-on-click-overlay="false">
-      <van-button
-        loading
-        type="primary"
-        loading-type="spinner"
-        style="background-color: grey; border-color: grey;"
-      />
-    </van-popup>
     <div style="font-size: large;padding: 20px 0px;color: grey;">{{text}}</div>
     </div>
 </template>
@@ -15,7 +7,6 @@
 export default {
     data(){
         return{
-            showLoading: false,
             text: "",
         }
     },
@@ -28,16 +19,16 @@ export default {
     },
     methods:{
         getUrl(){
-            this.showLoading=true;
+            this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
             this.postRequest("/chargecode/getalipay",{amount: 0})
             .then(resp=>{
-                this.showLoading=false;
+                this.$toast.clear();
                 if (resp.data.status!=200){this.$toast(resp.data.msg);}
                 else{
                     window.location.href=resp.data.obj.url;
                 }
             }).catch(err=>{
-                this.showLoading=false;
+                this.$toast.clear();
                 console.log(err);
                 this.$toast("服务器异常");
             })

@@ -40,9 +40,9 @@ public class GoodsController {
     @RequestMapping("/add")
     public RespBean add(int categoryId, BigDecimal price, BigDecimal superiorPrice,
                         int remain, String title, String description, String thumb,
-                        int sales){
+                        int sales, BigDecimal transportFee){
         Goods g = Goods.of(categoryId, price, superiorPrice, remain, title,
-                description, thumb, 0, sales);
+                description, thumb, 0, sales, transportFee);
         return goodsService.add(g);
     }
 
@@ -54,9 +54,9 @@ public class GoodsController {
     @RequestMapping("/update")
     public RespBean update(int categoryId, BigDecimal price, BigDecimal superiorPrice,
                         int remain, String title, String description, String thumb, int id,
-                           int sales){
+                           int sales, BigDecimal transportFee){
         Goods g = Goods.of(categoryId, price, superiorPrice, remain, title,
-                description, thumb, id, sales);
+                description, thumb, id, sales, transportFee);
         return goodsService.update(g);
     }
 
@@ -68,5 +68,10 @@ public class GoodsController {
     @RequestMapping("/getcountincategory")
     public RespBean getCountInCategory(int categoryId){
         return goodsService.getCountInCategory(categoryId);
+    }
+
+    @RequestMapping("/listall")
+    public RespBean listAll(){
+        return goodsService.listAll();
     }
 }

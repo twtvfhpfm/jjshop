@@ -8,6 +8,7 @@
       <van-cell title="会员管理" is-link to="/usermanager" />
       <van-cell title="收钱码管理" is-link to="/chargecodemanager" />
       <van-cell title="账单管理" is-link to="/billmanager" />
+      <van-cell title="发放优惠券" is-link to="/couponoffer" />
 </div>
 </template>
 <script>

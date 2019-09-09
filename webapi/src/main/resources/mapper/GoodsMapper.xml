@@ -6,8 +6,8 @@
     <insert id="add" useGeneratedKeys="true" keyColumn="id" keyProperty="id"
             parameterType="dev.jnx.jjshop.model.Goods">
     insert into Goods (categoryId, price, superiorPrice, remain, title, description,
-    thumb, sales) values(#{categoryId}, #{price}, #{superiorPrice}, #{remain}, #{title},
-    #{description}, #{thumb}, #{sales})
+    thumb, sales, transportFee) values(#{categoryId}, #{price}, #{superiorPrice}, #{remain}, #{title},
+    #{description}, #{thumb}, #{sales}, #{transportFee})
   </insert>
 
     <update id="delete">
@@ -18,7 +18,8 @@
 
     <update id="update">
         update Goods set categoryId=#{categoryId}, price=#{price}, superiorPrice=#{superiorPrice},
-        remain=#{remain},title=#{title},description=#{description},thumb=#{thumb},sales=#{sales}
+        remain=#{remain},title=#{title},description=#{description},thumb=#{thumb},sales=#{sales},
+        transportFee=#{transportFee}
         where id=#{id}
     </update>
 
@@ -43,5 +44,9 @@
 
     <select id="getCountInCategory" resultType="java.lang.Integer">
         select ifnull(count(*),0) from Goods where categoryId=#{categoryId} and isDeleted=0
+    </select>
+
+    <select id="listAll" resultType="java.util.Map">
+        select id,title from Goods where isDeleted=0 order by convert(title using gbk);
     </select>
 </mapper>

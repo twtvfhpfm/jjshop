@@ -14,6 +14,7 @@
           placeholder="请输入搜索关键词"
           show-action
           background="#f0f0f0"
+          style="margin-bottom: 10px;"
           @search="onSearch"
           @cancel="onCancel"
         >
@@ -21,14 +22,6 @@
         </van-search>
       </form>
     </van-sticky>
-    <van-popup v-model="showLoading" :overlay="false" :close-on-click-overlay="false">
-      <van-button
-        loading
-        type="primary"
-        loading-type="spinner"
-        style="background-color: grey; border-color: grey;"
-      />
-    </van-popup>
 
         <van-list
       v-model="loading"
@@ -36,10 +29,9 @@
       :error.sync="error"
       error-text="请求失败，点击重新加载"
       finished-text="没有更多了"
-      style="background-color: rgb(240,240,240);"
       @load="onLoad"
     >
-        <div v-for="item in list" :key="item.id" @click="onClick(item)" style="margin: 0px 10px;margin-bottom: 10px;background-color:white;border-radius: 10px;">
+        <div v-for="item in list" :key="item.id" @click="onClick(item)" style="margin: 0px 10px;margin-bottom: 10px;box-shadow: 1px 1px 5px #888888;border-radius: 10px;">
             <van-row style="padding-top: 10px;">
                 <van-col span="17" offset="1" style="text-align: left;">订单号：<span>{{item.orderId}}</span></van-col>
                 <van-col span="4" offset="1"><div style="color: red;font-size:small;">{{item.statusText}}</div></van-col>
@@ -51,7 +43,7 @@
             </van-row>
         </div> 
     </van-list>
-    <div :style="paddingStyle"></div>
+    <div style="padding: 30px 0px;"></div>
   </div>
 </template>
 <script>
@@ -59,7 +51,6 @@ export default {
   data() {
     return {
         value: "",
-      showLoading: false,
       list: [
           //{orderId: "", status: 0, statusText: "", totalPrice: 0, title:[]}
       ],
@@ -70,11 +61,6 @@ export default {
     };
   },
   computed:{
-    paddingStyle() {
-      var bottom = window.innerHeight - document.body.offsetHeight;
-      if(bottom<0) bottom=30;
-      return {paddingBottom: bottom + 'px', background: '#f0f0f0', color: 'grey'};
-    }
   },
   methods: {
       onClick(item){
@@ -99,13 +85,13 @@ export default {
     },
     getByUID(text){
         var uid = this.$store.state.user.id;
-        this.showLoading=true;
+        this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
         this.postRequest("/goodsorder/getbyuid",{
             uid: uid,
             lastMinId: this.lastMinId,
             text: text
         }).then(resp=>{
-        this.showLoading=false;
+        this.$toast.clear();
         if(resp.data.status!=200) {this.$toast(resp.data.msg);}
         else{
             if (resp.data.msg=="end") this.finished=true;
@@ -134,7 +120,7 @@ export default {
         }
         }).catch(err=>{
             this.loading=false;
-        this.showLoading=false;
+        this.$toast.clear();
             console.log(err);
             this.$toast("服务器异常");
         })
