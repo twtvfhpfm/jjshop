@@ -55,8 +55,8 @@ public class GoodsOrderController {
     }
 
     @RequestMapping("/list")
-    public RespBean list(int lastMinId, String text){
+    public RespBean list(int lastMinId, String text, int status, String beginTime, String endTime){
         if (lastMinId == 0) lastMinId = Integer.MAX_VALUE;
-        return goodsOrderService.list(lastMinId, text);
+        return goodsOrderService.list(lastMinId, text, status, beginTime, endTime);
     }
 }

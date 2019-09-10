@@ -81,7 +81,7 @@ export default {
         console.log(document.body.offsetHeight);
       //var categoryId = this.$store.state.manager.categoryId;
        // this.getByCategory(categoryId);
-       this.getByUID("");
+       this.getByUID(this.value);
     },
     getByUID(text){
         var uid = this.$store.state.user.id;
@@ -95,6 +95,7 @@ export default {
         if(resp.data.status!=200) {this.$toast(resp.data.msg);}
         else{
             if (resp.data.msg=="end") this.finished=true;
+            else this.finished=false;
             if (resp.data.obj.length > 0) this.lastMinId = resp.data.obj[resp.data.obj.length-1].id;
             for(var item of resp.data.obj){
                 var titleList = [];

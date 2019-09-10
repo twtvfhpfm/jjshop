@@ -27,10 +27,29 @@
       </div>
     </van-card>
 
-    
-    <van-divider :style="{ color: '#1989fa', borderColor: '#1989fa', padding: '0 16px' }">
-      物流信息
-    </van-divider>
+    <div v-if="usedCoupon.length>0">
+      <van-cell-group>
+      <van-cell icon="gold-coin-o" title="使用的优惠券" style="text-align:left;padding-left:10px;margin-top:10px;"/>
+      </van-cell-group>
+      <van-swipe-cell v-for="item in usedCoupon" :key="item.id" :name="item.id">
+        <div style="height:70px;overflow:auto;width: 95%; margin: 10px 10px;background-image: url(https://s2.ax1x.com/2019/09/05/nmg8PI.png);background-size:100% 100%;">
+            <div style="width: 68%;float:left;">
+                <div style="text-align: left;padding: 5px 5px;font-size:small;color:white;">有效期至: {{new Date(item.endTime.replace("+0000","Z")).toLocaleDateString()}}</div>
+                <div style="text-align: center;width: 100%;font-size: 20px;color:white;">{{(item.amount/1).toFixed(2)}}元</div>
+            </div>
+            <div style="width: 32%;float:left;height:100%;">
+                <span style="line-height: 70px;font-size:small;">{{goodsTitle(item)}}</span>
+            </div>
+        </div>
+        <template slot="right">
+          <van-button square type="danger" style="height: 100%;" text="返还" @click="unUseCoupon(item)"/>
+        </template>
+      </van-swipe-cell>
+    </div>
+
+    <van-cell-group>
+    <van-cell icon="logistics" title="物流信息" style="text-align:left;padding-left:10px;margin:10px 0px;"/>
+    </van-cell-group>
     <van-steps direction="vertical" :active="0">
       <van-step v-for="i2 in logisticList" :key="i2.AcceptTime">
           <div style="text-align: left;font-weight:bold;">{{i2.AcceptStation}}</div>
@@ -101,6 +120,7 @@ export default {
         logisticCode: "",
         shipperCode: "",
         shipperList: [],
+      usedCoupon: [],
       logisticShow: false,
       orderInfo: "",
       statusList: [
@@ -140,6 +160,44 @@ export default {
     this.getGoodsOrder();
   },
   methods: {
+      goodsTitle(item){
+          if (item.goodsTitle.length>6){
+              return item.goodsTitle.substr(0,6)+'...';
+          }
+          return item.goodsTitle;
+      },
+      unUseCoupon(item){
+          this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
+          this.postRequest('/coupon/unuse', {id: item.id, orderId: this.goodsOrder.orderId})
+          .then(resp=>{
+              this.$toast.clear();
+              if (resp.data.status!=200){this.$toast.fail(resp.data.msg);}
+              else {
+                  var idx = this.usedCoupon.indexOf(item);
+                  this.usedCoupon.splice(idx, 1);
+              }
+          }).catch(err=>{
+              this.$toast.clear();
+              console.log(err);
+              this.$toast.fail("服务器异常");
+          })
+      },
+      getCoupon(){
+          this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
+          this.postRequest('/coupon/get', {id: 0, goodsId: 0, orderId: this.goodsOrder.orderId})
+          .then(resp=>{
+              this.$toast.clear();
+              if (resp.data.status!=200){this.$toast.fail(resp.data.msg);}
+              else {
+                  this.usedCoupon = resp.data.obj;
+              }
+              this.queryLogistic();
+          }).catch(err=>{
+              this.$toast.clear();
+              console.log(err);
+              this.$toast.fail("服务器异常");
+          })
+      },
       queryLogistic(){
           this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
           this.postRequest("/logistics/getlogistic", {orderId: this.goodsOrder.orderId})
@@ -312,7 +370,7 @@ export default {
               this.goodsOrder.address.city +
               this.goodsOrder.address.county +
               this.goodsOrder.address.addressDetail;
-              this.queryLogistic();
+              this.getCoupon();
           }
         })
         .catch(err => {

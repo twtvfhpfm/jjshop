@@ -11,7 +11,7 @@
         style="background-color: rgb(240, 240,240);"
       />
     </van-sticky>
-    <van-action-sheet v-model="listShow" :actions="list" close-on-click-overlay @select="onSelect">
+    <van-action-sheet v-model="listShow" :actions="list" close-on-click-overlay @select="onSelect" class="actionList">
     </van-action-sheet>
     <van-action-sheet v-model="dateShow" close-on-click-overlay>
         <van-datetime-picker
@@ -158,3 +158,11 @@ export default {
     }
 }
 </script>
+<style lang="less">
+.actionList{
+    .van-action-sheet__item{
+        text-align: left;
+        padding-left: 10px;
+    }
+}
+</style>

@@ -28,7 +28,7 @@
   </update>
 
     <select id="get" resultType="java.util.Map">
-        select * from Coupon where uid=#{uid} and current_timestamp() &lt; endTime and isDeleted=0 and isUsed=0
+        select * from Coupon where uid=#{uid} and current_timestamp() &lt; endTime
         <if test="orderId != null and orderId!=''">
             and orderId=#{orderId}
         </if>

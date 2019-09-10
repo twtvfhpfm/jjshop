@@ -21,20 +21,23 @@
           <div slot="action" @click="onSearch">搜索</div>
         </van-search>
       </form>
+    <van-dropdown-menu class="filterMenu">
+      <van-dropdown-item v-model="filterValueTime" :options="filterOptionsTime" @change="onFilterChange"/>
+      <van-dropdown-item v-model="filterValueStatus" :options="filterOptionsStatus" @change="onFilterChange"/>
+    </van-dropdown-menu>
     </van-sticky>
 
-        <van-list
+    <van-list
       v-model="loading"
       :finished="finished"
       :error.sync="error"
       error-text="请求失败，点击重新加载"
       finished-text="没有更多了"
-      style="background-color: rgb(240,240,240);"
       @load="onLoad"
     >
-        <div v-for="item in list" :key="item.id" @click="onClick(item)" style="margin: 0px 10px;margin-bottom: 10px;background-color:white;border-radius: 10px;">
+        <div v-for="item in list" :key="item.id" @click="onClick(item)" style="margin: 0px 10px;margin-bottom: 10px;box-shadow: 1px 1px 5px #888888;border-radius: 10px;">
             <van-row style="padding-top: 10px;">
-                <van-col span="17" offset="1" style="text-align: left;">订单号：<span>{{item.orderId}}</span></van-col>
+                <van-col span="17" offset="1" style="text-align: left;">{{item.name}}：<span>{{item.orderId}}</span></van-col>
                 <van-col span="4" offset="1"><div :style="statusStyle(item.status)">{{item.statusText}}</div></van-col>
             </van-row>
             <van-divider/>
@@ -44,7 +47,7 @@
             </van-row>
         </div> 
     </van-list>
-    <div style="padding: 30px 0px;background-color:rgb(240,240,240);"></div>
+    <div style="padding: 30px 0px;"></div>
   </div>
 </template>
 <script>
@@ -53,17 +56,53 @@ export default {
     return {
         value: "",
       list: [
-          //{orderId: "", status: 0, statusText: "", totalPrice: 0, title:[]}
+          //{orderId: "", status: 0, statusText: "", totalPrice: 0, title:[], name:""}
       ],
       loading: false,
       finished: false,
       error: false,
-      lastMinId: 0
+      lastMinId: 0,
+      filterValueStatus: -1,
+      filterValueTime: -1,
+      beginTime: '',
+      endTime: '',
+      filterOptionsTime: [
+        {text: '全部订单', value: -1},
+        {text: '今日订单', value: 0},
+        {text: '昨日订单', value: 1},
+      ],
+      filterOptionsStatus: [
+        {text: '全部状态', value: -1},
+        {text: '待付款', value: 0},
+        {text: '待发货', value: 1},
+        {text: '待收货', value: 2},
+        {text: '待评价', value: 3},
+        {text: '交易完成', value: 4},
+        {text: '已取消', value: 5},
+      ]
     };
   },
   computed:{
   },
   methods: {
+    onFilterChange(value){
+      if (this.filterValueTime == 0){
+        var today = new Date();
+        this.beginTime = today.toLocaleDateString();
+        today.setDate(today.getDate()+1);
+        this.endTime = today.toLocaleDateString();
+      }else if (this.filterValueTime == 1){
+        var today = new Date();
+        today.setDate(today.getDate()-1);
+        this.beginTime = today.toLocaleDateString();
+        today.setDate(today.getDate()+2);
+        this.endTime = today.toLocaleDateString();
+      }else{
+        this.beginTime = '';
+        this.endTime = '';
+      }
+      this.onSearch();
+    },
     statusStyle(status) {
       if (status == 0){
         return {color: 'red', fontSize: 'small'};
@@ -92,18 +131,22 @@ export default {
       this.$toast("cancel: " + this.value);
     },
     onLoad() {
-       this.getOrderList("");
+      this.getOrderList(this.value);
     },
     getOrderList(text){
         this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
         this.postRequest("/goodsorder/list",{
             lastMinId: this.lastMinId,
-            text: text
+            text: text,
+            status: this.filterValueStatus,
+            beginTime: this.beginTime,
+            endTime: this.endTime
         }).then(resp=>{
             this.$toast.clear();
             if(resp.data.status!=200) {this.$toast(resp.data.msg);}
             else{
             if (resp.data.msg=="end") this.finished=true;
+            else this.finished=false;
             if (resp.data.obj.length > 0) this.lastMinId = resp.data.obj[resp.data.obj.length-1].id;
             for(var item of resp.data.obj){
                 var titleList = [];
@@ -122,7 +165,8 @@ export default {
                     status: item.status,
                     totalPrice: item.totalPrice,
                     title: titleList,
-                    statusText: statusText
+                    statusText: statusText,
+                    name: item.address.name,
                 });
             }
             this.loading=false;
@@ -138,3 +182,14 @@ export default {
   }
 };
 </script>
+<style lang="less">
+.filterMenu{
+  margin-bottom: 10px;
+  .van-dropdown-menu__item{
+    background-color: #f0f0f0;
+  }
+  .van-cell__title{
+    text-align: left;
+  }
+}
+</style>

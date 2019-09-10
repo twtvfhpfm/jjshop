@@ -30,6 +30,8 @@ import BatchSkuListManager from '@/components/BatchSkuListManager'
 import PriceReduceManager from '@/components/PriceReduceManager'
 import CouponOffer from '@/components/CouponOffer'
 import Coupon from '@/components/Coupon'
+import CouponManager from '@/components/CouponManager'
+import PrizeManager from '@/components/PrizeManager'
 
 Vue.use(Router)
 
@@ -45,19 +47,46 @@ export default new Router({
           path: '/coupon',
           name: 'Coupon',
           component: Coupon,
-          hidden: true
+          hidden: true,
+          meta:{
+            requireAuth:true
+          }
+        }, 
+        {
+          path: '/couponmanager',
+          name: 'CouponManager',
+          component: CouponManager,
+          hidden: true,
+          meta:{
+            requireAuth:true
+          }
+        }, 
+        {
+          path: '/prizemanager',
+          name: 'PrizeManager',
+          component: PrizeManager,
+          hidden: true,
+          meta:{
+            requireAuth:true
+          }
         }, 
         {
           path: '/couponoffer',
           name: 'CouponOffer',
           component: CouponOffer,
-          hidden: true
+          hidden: true,
+          meta:{
+            requireAuth:true
+          }
         }, 
         {
           path: '/pricereducemanager',
           name: 'PriceReduceManager',
           component: PriceReduceManager,
-          hidden: true
+          hidden: true,
+          meta:{
+            requireAuth:true
+          }
         }, 
         {
           path: '/login',

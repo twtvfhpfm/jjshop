@@ -15,5 +15,7 @@ public interface GoodsOrderDao {
     int confirmReceipt(@Param("orderId") String orderId, @Param("uid") int uid);
     GoodsOrder get(String orderId);
     List<GoodsOrder> getByUID(@Param("uid") int uid, @Param("lastMinId")int lastMinId);
-    List<GoodsOrder> list(@Param("lastMinId") int lastMinId, @Param("text") String text);
+    List<GoodsOrder> list(@Param("lastMinId") int lastMinId, @Param("text") String text,
+                          @Param("status") int status, @Param("beginTime") String beginTime,
+                          @Param("endTime") String endTime);
 }

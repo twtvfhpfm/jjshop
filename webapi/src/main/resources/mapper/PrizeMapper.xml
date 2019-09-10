@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dev.jnx.jjshop.dao.PrizeDao">
+
+    <select id="list" resultType="dev.jnx.jjshop.model.Prize">
+        select * from Prize order by amount asc;
+    </select>
+
+    <insert id="add" useGeneratedKeys="true" keyColumn="id" keyProperty="id" parameterType="dev.jnx.jjshop.model.Prize">
+        insert into Prize (amount, num, expireDays) values (#{amount}, #{num}, #{expireDays})
+    </insert>
+
+    <update id="update" parameterType="dev.jnx.jjshop.model.Prize">
+        update Prize set amount=#{amount}, num=#{num}, expireDays=#{expireDays} where id=#{id}
+    </update>
+
+    <delete id="delete">
+        delete from Prize where id=#{id}
+    </delete>
+</mapper>

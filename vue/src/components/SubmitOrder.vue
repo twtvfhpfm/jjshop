@@ -40,7 +40,7 @@
         <van-radio v-for="item in couponList" :key="item.id" :name="item.id" class="coupon">
           <div style="height:70px;overflow:auto;width: 95%; margin: 10px 10px;background-image: url(https://s2.ax1x.com/2019/09/05/nmg8PI.png);background-size:100% 100%;">
               <div style="width: 68%;float:left;">
-                  <div style="text-align: left;padding: 5px 5px;font-size:small;color:white;">有效期至: {{new Date(item.endTime).toLocaleDateString()}}</div>
+                  <div style="text-align: left;padding: 5px 5px;font-size:small;color:white;">有效期至: {{new Date(item.endTime.replace("+0000","Z")).toLocaleDateString()}}</div>
                   <div style="text-align: center;width: 100%;font-size: 20px;color:white;">{{(item.amount/1).toFixed(2)}}元</div>
               </div>
               <div style="width: 32%;float:left;height:100%;">

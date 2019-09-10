@@ -24,6 +24,7 @@ public class GoodsOrderService {
     @Autowired private RedisTemplate redisTemplate;
     @Autowired private CouponDao couponDao;
     @Autowired private PriceReduceDao priceReduceDao;
+    @Autowired private PrizeDrawDao prizeDrawDao;
     private Logger logger = Logger.getLogger(this.getClass());
 
     public GoodsOrderModel getModel(GoodsOrder goodsOrder){
@@ -194,10 +195,16 @@ public class GoodsOrderService {
         }
     }
 
+    @Transactional
     public RespBean confirmReceipt(String orderId, int uid){
         int ret = goodsOrderDao.confirmReceipt(orderId, uid);
         if (ret == 1){
-            return RespBean.ok("修改成功");
+            ret = prizeDrawDao.add(uid, orderId);
+            if (ret == 1){
+                return RespBean.ok("修改成功");
+            }else{
+                return RespBean.error("抽奖机会发放失败");
+            }
         }
         else{
             return RespBean.error("确认收货失败");
@@ -227,8 +234,8 @@ public class GoodsOrderService {
         return RespBean.ok(msg, modelList);
     }
 
-    public RespBean list(int lastMinId, String text){
-        List<GoodsOrder> ret = goodsOrderDao.list(lastMinId, text);
+    public RespBean list(int lastMinId, String text, int status, String beginTime, String endTime){
+        List<GoodsOrder> ret = goodsOrderDao.list(lastMinId, text, status, beginTime, endTime);
         List<GoodsOrderModel> modelList = new ArrayList<>();
         for(GoodsOrder o: ret){
             modelList.add(getModel(o));

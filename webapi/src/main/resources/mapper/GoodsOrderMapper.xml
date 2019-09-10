@@ -13,7 +13,7 @@
     </update>
 
     <update id="confirmReceipt">
-        update GoodsOrder set status=4 where orderId=#{orderId} and uid=#{uid}
+        update GoodsOrder set status=4 where orderId=#{orderId} and uid=#{uid} and status=2
     </update>
 
     <insert id="add" parameterType="dev.jnx.jjshop.model.GoodsOrder" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
@@ -34,6 +34,15 @@
         select * from GoodsOrder where id &lt; #{lastMinId}
         <if test="text != null and text!=''">
             and orderId like CONCAT('%',#{text},'%')
+        </if>
+        <if test="status != -1">
+            and status=#{status}
+        </if>
+        <if test="beginTime != ''">
+            and createTime &gt; #{beginTime}
+        </if>
+        <if test="endTime != ''">
+            and createTime &lt; #{endTime}
         </if>
         order by id desc limit 20
     </select>
