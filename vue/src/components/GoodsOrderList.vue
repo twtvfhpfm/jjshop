@@ -34,7 +34,7 @@
         <div v-for="item in list" :key="item.id" @click="onClick(item)" style="margin: 0px 10px;margin-bottom: 10px;box-shadow: 1px 1px 5px #888888;border-radius: 10px;">
             <van-row style="padding-top: 10px;">
                 <van-col span="17" offset="1" style="text-align: left;">订单号：<span>{{item.orderId}}</span></van-col>
-                <van-col span="4" offset="1"><div style="color: red;font-size:small;">{{item.statusText}}</div></van-col>
+                <van-col span="4" offset="1"><div :style="statusStyle(item.status)">{{item.statusText}}</div></van-col>
             </van-row>
             <van-divider/>
             <van-row style="padding-bottom: 10px;">
@@ -76,6 +76,21 @@ export default {
     },
     onCancel() {
       this.$toast("cancel: " + this.value);
+    },
+    statusStyle(status) {
+      if (status == 0){
+        return {color: 'red', fontSize: 'small'};
+      }else if (status == 1){
+        return {color: 'green', fontSize: 'small'};
+      }else if (status == 2){
+        return {color: 'blue', fontSize: 'small'};
+      }else if (status == 3){
+        return {color: 'yellow', fontSize: 'small'};
+      }else if (status == 4){
+        return {color: 'grey', fontSize: 'small'};
+      }else if (status == 5){
+        return {color: 'grey', fontSize: 'small'};
+      }
     },
     onLoad() {
         console.log(document.body.offsetHeight);

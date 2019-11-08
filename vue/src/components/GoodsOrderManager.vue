@@ -37,7 +37,7 @@
     >
         <div v-for="item in list" :key="item.id" @click="onClick(item)" style="margin: 0px 10px;margin-bottom: 10px;box-shadow: 1px 1px 5px #888888;border-radius: 10px;">
             <van-row style="padding-top: 10px;">
-                <van-col span="17" offset="1" style="text-align: left;">{{item.name}}：<span>{{item.orderId}}</span></van-col>
+                <van-col span="17" offset="1" style="text-align: left;font-size:small;">{{item.name}}：<span>{{item.orderId.substr(0,9)+'-'+item.orderId.substr(9,4)+'-'+item.orderId.substr(13)}}</span></van-col>
                 <van-col span="4" offset="1"><div :style="statusStyle(item.status)">{{item.statusText}}</div></van-col>
             </van-row>
             <van-divider/>
@@ -95,7 +95,7 @@ export default {
         var today = new Date();
         today.setDate(today.getDate()-1);
         this.beginTime = today.toLocaleDateString();
-        today.setDate(today.getDate()+2);
+        today.setDate(today.getDate()+1);
         this.endTime = today.toLocaleDateString();
       }else{
         this.beginTime = '';

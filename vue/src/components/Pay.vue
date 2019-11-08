@@ -64,7 +64,7 @@ export default {
           this.showWechat=true;
           this.showAlipay=true;
         }else{
-          if (this.count++ == 4){
+          if (this.count++ == 2){
           this.$toast.clear();
           clearInterval(this.timer);
           this.count = 0;

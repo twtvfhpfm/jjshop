@@ -33,15 +33,18 @@ public class CouponService {
             return RespBean.ok("使用成功");
         }
     }
-    public RespBean unUse(int id, String orderId, int uid){
-        int ret = couponDao.unUse(id, orderId, uid);
+    public RespBean unUse(int id, String orderId){
+        int ret = couponDao.unUse(id, orderId);
         if (ret != 1){
             return RespBean.error("优惠券退回失败");
         }else{
             return RespBean.ok("退回成功");
         }
     }
-    public RespBean get(int id, int uid, int goodsId, String orderId){
+    public RespBean get(int id, int uid, int goodsId, String orderId, int role){
+        if (role == 1 && orderId != null && !orderId.isEmpty()){
+            uid = 0;
+        }
         List<Map<String, Object>> list = couponDao.get(id, uid, goodsId, orderId);
         list.forEach(i -> {
             if (i.get("goodsId").equals(0)){

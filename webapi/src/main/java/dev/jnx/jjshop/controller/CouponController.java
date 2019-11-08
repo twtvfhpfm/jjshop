@@ -25,12 +25,12 @@ public class CouponController {
         return couponService.use(id, orderId, currentUid);
     }
     @RequestMapping("/unuse")
-    public RespBean unUse(int id, String orderId, int currentUid){
-        return couponService.unUse(id, orderId, currentUid);
+    public RespBean unUse(int id, String orderId){
+        return couponService.unUse(id, orderId);
     }
 
     @RequestMapping("/get")
-    public RespBean get(int id, int currentUid, int goodsId, String orderId){
-        return couponService.get(id, currentUid, goodsId, orderId);
+    public RespBean get(int id, int currentUid, int goodsId, String orderId, int currentRole){
+        return couponService.get(id, currentUid, goodsId, orderId, currentRole);
     }
 }

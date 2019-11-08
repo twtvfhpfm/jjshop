@@ -71,19 +71,25 @@ export default {
                 this.$toast.fail('未填写完整');
                 return;
             }
-            this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
-            this.postRequest('/coupon/offer', this.coupon)
-            .then(resp=>{
-                this.$toast.clear();
-                if (resp.data.status!=200){this.$toast.fail(resp.data.msg);}
-                else {
-                    this.$toast.success('发放成功');
-                }
-            }).catch(err=>{
-                this.$toast.clear();
-                console.log(err);
-                this.$toast.fail("服务器异常");
-            })
+            this.$dialog.confirm({
+                message: "确定发放优惠券？"
+                })
+                .then(() => {
+                    this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
+                    this.postRequest('/coupon/offer', this.coupon)
+                    .then(resp=>{
+                        this.$toast.clear();
+                        if (resp.data.status!=200){this.$toast.fail(resp.data.msg);}
+                        else {
+                            this.$toast.success('发放成功');
+                            this.$router.back(-1);
+                        }
+                    }).catch(err=>{
+                        this.$toast.clear();
+                        console.log(err);
+                        this.$toast.fail("服务器异常");
+                    })
+                });
         },
         dateFormatter(type, value){
             switch(type){

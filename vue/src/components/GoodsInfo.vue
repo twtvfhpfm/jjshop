@@ -4,7 +4,7 @@
     <van-nav-bar title left-text="" left-arrow @click-left="onClickLeft" style="background-color: rgb(240, 240,240);"/>
     </van-sticky>
     <van-swipe class="goods-swipe" :autoplay="3000">
-      <van-swipe-item v-for="thumb in goods.thumbs" :key="thumb">
+      <van-swipe-item v-for="thumb in bannerList" :key="thumb">
         <img :src="thumb" />
       </van-swipe-item>
     </van-swipe>
@@ -14,18 +14,23 @@
         <div class="goods-price">{{ formatPrice(goods.price) }}</div>
       </van-cell>
       <van-cell class="goods-express">
-        <van-col span="6">运费：{{formatPrice(goods.transportFee)}}</van-col>
+        <van-col span="9">运费：{{formatPrice(goods.transportFee)}}</van-col>
         <van-col span="9">剩余：{{ goods.remain }}</van-col>
-        <van-col span="9">销量：{{ goods.sales }}</van-col>
+        <van-col span="6">销量：{{ goods.sales }}</van-col>
       </van-cell>
     </van-cell-group>
 
     <!--van-cell-group class="goods-cell-group">
       <van-cell title="查看商品详情" is-link @click="sorry" />
     </van-cell-group-->
-    <div style="text-align:left;padding: 10px 10px;">{{goods.description}}</div>
+    <van-field
+      v-model="goods.description"
+      type="textarea"
+      autosize
+      readonly
+    />
       <div v-if="goods.thumbs.length>1" >
-        <img v-for="thumb in goods.thumbs" :key="thumb" :src="thumb" style="width:100%;"/>
+        <img v-for="(thumb,idx) in goods.thumbs" :key="idx" :src="thumb" style="width:100%;"/>
       </div>
     <div style="padding: 30px 0px;"/>
     <van-submit-bar style="bottom: 50px;" button-text="加入购物车" @submit="onClickShowSku" />
@@ -88,6 +93,7 @@ export default {
         thumbs: [],
         sales: 0,
       },
+      bannerList:[],
       quota: 0,
       quotaUsed: 0,
       show: false,
@@ -112,6 +118,22 @@ export default {
     };
   },
   methods: {
+    filterBannerList(){
+      this.bannerList = [];
+      this.bannerList.push(this.goods.thumbs[0]);
+      if (this.goods.thumbs.length > 1){
+        for(let i=1; i< this.goods.thumbs.length;i++){
+          let img = new Image();
+          img.src = this.goods.thumbs[i];
+          img.onload = ()=>{
+            if (img.width >= img.height){
+              this.bannerList.push(img.src);
+            }
+          }
+        }
+      }
+
+    },
     getGoods(){
       this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
       this.postRequest("/goods/get",{id: this.$store.state.goods.id})
@@ -131,6 +153,8 @@ export default {
           if (this.goods.thumbs.length==0){
             this.goods.thumbs.push("https://s2.ax1x.com/2019/08/22/mwKZlj.jpg");
           }
+
+          this.filterBannerList();
           
           this.sku.price=this.goods.price;
           this.sku.stock_num=this.goods.remain;

@@ -11,7 +11,7 @@ import java.util.Map;
 public interface CouponDao {
     int offer(Map<String, Object> params);
     int use(@Param("id") int id, @Param("orderId") String orderId, @Param("uid") int uid);
-    int unUse(@Param("id") int id, @Param("orderId") String orderId, @Param("uid") int uid);
+    int unUse(@Param("id") int id, @Param("orderId") String orderId);
     List<Map<String, Object>> get(@Param("id") int id,
                      @Param("uid") int uid,
                      @Param("goodsId") int goodsId,

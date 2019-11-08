@@ -24,11 +24,14 @@
         and current_timestamp() &gt; beginTime and current_timestamp() &lt; endTime
   </update>
     <update id="unUse">
-        update Coupon set orderId='', isUsed=0 where orderId=#{orderId} and isUsed=1 and uid=#{uid}
+        update Coupon set orderId='', isUsed=0 where orderId=#{orderId} and isUsed=1
   </update>
 
     <select id="get" resultType="java.util.Map">
-        select * from Coupon where uid=#{uid} and current_timestamp() &lt; endTime
+        select * from Coupon where current_timestamp() &lt; endTime
+        <if test="uid != 0">
+            and uid=#{uid}
+        </if>
         <if test="orderId != null and orderId!=''">
             and orderId=#{orderId}
         </if>

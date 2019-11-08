@@ -167,20 +167,25 @@ export default {
           return item.goodsTitle;
       },
       unUseCoupon(item){
-          this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
-          this.postRequest('/coupon/unuse', {id: item.id, orderId: this.goodsOrder.orderId})
-          .then(resp=>{
-              this.$toast.clear();
-              if (resp.data.status!=200){this.$toast.fail(resp.data.msg);}
-              else {
-                  var idx = this.usedCoupon.indexOf(item);
-                  this.usedCoupon.splice(idx, 1);
-              }
-          }).catch(err=>{
-              this.$toast.clear();
-              console.log(err);
-              this.$toast.fail("服务器异常");
-          })
+        this.$dialog.confirm({
+            message: "确定将优惠券返还给用户？"
+            })
+            .then(() => {
+              this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});
+              this.postRequest('/coupon/unuse', {id: item.id, orderId: this.goodsOrder.orderId})
+              .then(resp=>{
+                  this.$toast.clear();
+                  if (resp.data.status!=200){this.$toast.fail(resp.data.msg);}
+                  else {
+                      var idx = this.usedCoupon.indexOf(item);
+                      this.usedCoupon.splice(idx, 1);
+                  }
+              }).catch(err=>{
+                  this.$toast.clear();
+                  console.log(err);
+                  this.$toast.fail("服务器异常");
+              })
+            })
       },
       getCoupon(){
           this.$toast.loading({duration:0, forbidClick:true, message:'加载中...'});

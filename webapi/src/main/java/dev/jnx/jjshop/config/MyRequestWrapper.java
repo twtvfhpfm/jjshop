@@ -47,6 +47,12 @@ public class MyRequestWrapper extends HttpServletRequestWrapper {
                 uid = user.getId();
             }
             return new String[]{String.valueOf(uid)};
+        }else if (name.equals("currentRole")){
+            int role = -1;
+            if(user!=null){
+                role = user.getRole();
+            }
+            return new String[]{String.valueOf(role)};
         }
         return super.getParameterValues(name);
     }

@@ -39,7 +39,7 @@ public class AuthFilter implements Filter {
             "/logistics/add", "/logistics/update", "/logistics/getshippercode", "/logistics/get",
             "/bill/.*",
             "/pricereduce/add", "/pricereduce/update", "/pricereduce/delete",
-            "/coupon/offer",
+            "/coupon/offer", "/coupon/unuse",
             "/prize/.*"};
     //普通用户登录才能访问的接口
     private static final String[] authUser = {"/address/.*", "/cart/.*", "/goodsorder/.*",
